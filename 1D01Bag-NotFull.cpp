@@ -3,7 +3,7 @@ using namespace std;
 
 // 一维 01 背包可不装满模板
 
-int main1() {
+void BagNotFull() {
     constexpr int V = 5; // 背包空间
     // 物品体积与物品价值
     vector<pair<int, int>> items{{2, 10}, {4, 5}, {1, 4}};
@@ -24,5 +24,4 @@ int main1() {
         }
     }
     cout << dp.back() << endl;
-    return 0;
 }

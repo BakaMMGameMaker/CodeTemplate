@@ -3,10 +3,10 @@ using namespace std;
 
 // 一维 01 背包必须装满模板
 
-int main1() {
+void BagFull() {
     constexpr int V = 5; // 背包空间
     // 物品体积与物品价值
-    vector<pair<int, int>> items{{2, 10}, {4, 5}, {1, 4}};
+    vector<pair<int, int> > items{{2, 10}, {4, 5}, {1, 4}};
 
     /*
      * 解法说明：
@@ -28,5 +28,4 @@ int main1() {
     }
     if (dp.back() == -1) cout << 0 << endl;
     else cout << dp.back() << endl;
-    return 0;
 }
