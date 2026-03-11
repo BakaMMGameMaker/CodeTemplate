@@ -3,6 +3,8 @@
 using namespace std;
 
 // 链表反转模板
+
+// 思路，俩俩节点连接反向，随后同时步进
 ListNode *reverseList(ListNode *head) {
     ListNode *prev = nullptr;
     ListNode *cur = head;
@@ -19,7 +21,8 @@ ListNode *reverseList(ListNode *head) {
 }
 
 // 反转区间
-ListNode *reverseBetween(ListNode *head, int left, int right) {
+// 思路：找到待反转区间的前驱节点，随后把区间内的每个节点依次头插到这个节点之后
+ListNode *reverseBetween(ListNode *head, const int left, const int right) {
     if (!head || left == right) return head;
 
     // 此处 left right 代表第几个节点 1-base
@@ -44,4 +47,19 @@ ListNode *reverseBetween(ListNode *head, int left, int right) {
         pre->next = next; // 更新区间头
     }
     return dummy.next;
+}
+
+// 反转前 N 个节点
+ListNode *successor = nullptr; // 记录前 n 个节点反转之后，后面剩下的节点是谁，这样反转完才能接上
+
+ListNode *reverseN(ListNode *head, int n) {
+    if (n == 1) {
+        successor = head->next;
+        return head;
+    }
+
+    ListNode *newHead = reverseN(head->next, n - 1); // 1 2 3 4 5 -> 1 4 3 2 5
+    head->next->next = head; // 让 2 指向 1，因为 1 即将去到 2 和 5 中间
+    head->next = successor; // 反转 2 3 4 后，successor 是 5，让 1 接到 5 上
+    return newHead;
 }
