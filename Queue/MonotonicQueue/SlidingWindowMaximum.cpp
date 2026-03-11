@@ -39,3 +39,39 @@ vector<int> SlidingWindowMinimum(const vector<int> &nums, int k) {
     }
     return ans;
 }
+
+// 二维滑动窗口最大值
+// 先按行做宽度为 b 的窗口最值，得到中间矩阵
+// 再对中间矩阵做高度为 a 的窗口最值，得到结果矩阵
+
+vector<vector<int> > GetRowMax(const vector<vector<int> > &g, int b) {
+    int n = static_cast<int>(g.size());
+    int m = static_cast<int>(g.back().size());
+    vector RowMax(g.size(), vector<int>(m - b + 1));
+    for (int i = 0; i < n; ++i) {
+        deque<int> q; // 单调队列
+        for (int j = 0; j < m; ++j) {
+            while (!q.empty() && q.front() <= j - b) q.pop_front();
+            while (!q.empty() && g[i][q.back()] <= g[i][j]) q.pop_back();
+            q.push_back(j);
+            if (j >= b - 1) RowMax[i][j - b + 1] = g[i][q.front()];
+        }
+    }
+    return RowMax;
+}
+
+vector<vector<int> > GetColMax(const vector<vector<int> > &g, int a) {
+    int n = static_cast<int>(g.size());
+    int m = static_cast<int>(g.back().size());
+    vector ColMax(n - a + 1, vector<int>(m));
+    for (int j = 0; j < m; ++j) {
+        deque<int> q;
+        for (int i = 0; i < n; ++i) {
+            while (!q.empty() && q.front() <= i - a) q.pop_front();
+            while (!q.empty() && g[q.back()][j] <= g[i][j]) q.pop_back();
+            q.push_back(i);
+            if (i >= a - 1) ColMax[i - a + 1][j] = g[q.front()][j];
+        }
+    }
+    return ColMax;
+}
