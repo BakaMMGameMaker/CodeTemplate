@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// 链表快慢指针模板
+// 链表双指针模板
 
 // 找中点
 // 注意初始化都为 head，fast 不需要提前走一步
@@ -96,4 +96,17 @@ ListNode *removeNthFromEnd(ListNode *head, int n) {
     delete del;
 
     return dummy.next;
+}
+
+// 找两个链表的相交节点
+// 思路，A 走完到 B，B 走完到 A
+// 如果两个指针相等，要不一起走到了结尾 (lenA+lenB)，要不发生了相遇
+const ListNode *IntersectionNode(const ListNode *A, const ListNode *B) {
+    const ListNode *pa = A;
+    const ListNode *pb = B;
+    while (pa != pb) {
+        pa = (pa == nullptr) ? B : pa->next;
+        pb = (pb == nullptr) ? A : pb->next;
+    }
+    return pa; // nullptr or IntersectionNode
 }
