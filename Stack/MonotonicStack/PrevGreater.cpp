@@ -16,3 +16,19 @@ vector<int> prevGreaterElement(const vector<int> &nums) {
     }
     return ans;
 }
+
+// example 1 - stock span - 今天的股票价格往左边连续多少天都小于等于今天
+vector<int> StockSpan(const vector<int> &price) {
+    const int   n = static_cast<int>(price.size());
+    vector<int> ans(n, 0);
+    stack<int>  st;
+
+    for (int i = 0; i < n; ++i) {
+        while (!st.empty() && price[st.top()] <= price[i]) {
+            ans[i] += ans[st.top()];
+            st.pop();
+        }
+        st.push(i);
+    }
+    return ans;
+}
