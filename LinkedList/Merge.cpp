@@ -69,3 +69,22 @@ ListNode *mergeKLists(const vector<ListNode *> &lists) {
 
     return dm.next;
 }
+
+// 归并排序 MergeSort
+// 思路 找中点 + 递归分治 + 合并有序链表
+ListNode *mergeSort(ListNode *head) {
+    if (!head || !head->next) return head;
+    ListNode *slow = head;
+    const ListNode *fast = head;
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    ListNode *mid = slow->next;
+    slow->next = nullptr; // 断开连接，不然合并会出事故
+    ListNode *left = mergeSort(head); // 左半段排序完后的头节点
+    ListNode *right = mergeSort(mid); // 右半段排序完后的头节点
+
+    return mergeTwoLists(left, right);
+}
