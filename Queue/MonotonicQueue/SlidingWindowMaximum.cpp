@@ -21,3 +21,21 @@ vector<int> SlidingWindowMaximum(const vector<int> &nums, int k) {
     }
     return ans;
 }
+
+vector<int> SlidingWindowMinimum(const vector<int> &nums, int k) {
+    int n = static_cast<int>(nums.size());
+    vector<int> ans;
+    deque<int> dq;
+
+    for (int i = 0; i < n; ++i) {
+        // 去除离队的
+        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
+        // 去除比自己大的
+        while (!dq.empty() && nums[dq.back()] >= nums[i]) dq.pop_back();
+        // 把自己加进去
+        dq.push_back(i);
+        // 窗口形成后，添加答案
+        if (i >= k - 1) ans.push_back(nums[dq.front()]);
+    }
+    return ans;
+}
