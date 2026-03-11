@@ -50,7 +50,7 @@ struct cmp {
     }
 };
 
-ListNode *mergeKLists(vector<ListNode *> &lists) {
+ListNode *mergeKLists(const vector<ListNode *> &lists) {
     priority_queue<ListNode *, vector<ListNode *>, cmp> pq;
     for (auto node: lists) {
         if (node) pq.push(node); // 加入每个链表的头节点
