@@ -45,3 +45,27 @@ string removeKDigits(const string &num, int k) {
     string ans = st.substr(pos);
     return ans.empty() ? "0" : ans;
 }
+
+// example 2 - RemoveDuplicateLetters - 每个字母只保留一个，使得结果字典序最小
+// 和删除数字类似，要让字典序更小的字母尽量靠前
+// 这个比较难理解，看看就行
+string removeDuplicateLetters(const string &s) {
+    vector<int> cnt(26, 0), vis(26, 0);
+    for (const char c : s) cnt[c - 'a']++; // 统计每个字符出现次数
+
+    string st;
+    for (const char c : s) {
+        cnt[c - 'a']--;
+        if (vis[c - 'a']) continue; // 防止结果中有重复字符
+
+        // 1 - 要让小字符更靠前，所以栈中比自己大的要出去
+        // 2 - 如果栈中比自己大的字符是孤儿，那么就不能再踢走了
+        while (!st.empty() && st.back() > c && cnt[st.back() - 'a'] > 0) {
+            vis[st.back() - 'a'] = 0;
+            st.pop_back();
+        }
+        st.push_back(c);
+        vis[c - 'a'] = 1;
+    }
+    return st;
+}
