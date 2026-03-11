@@ -25,11 +25,11 @@ int NoLongerThanM(const vector<int> &nums, int m) {
         // 踢出离开窗口的
         while (!dq.empty() && dq.front() < i - m) dq.pop_front();
         // 先别着急踢，不然可能没答案了
+        // 不用等窗口长度变为 m
         ans = max(ans, s[i] - s[dq.front()]);
         // 踢出比当前前缀和大的
         while (!dq.empty() && s[dq.back()] > s[i]) dq.pop_back();
         dq.push_back(i);
     }
-
     return ans;
 }
