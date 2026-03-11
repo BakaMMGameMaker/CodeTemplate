@@ -1,7 +1,8 @@
 ﻿#include <bits/stdc++.h>
 using namespace std;
 
-// 最长有效括号解法三 (1=stack, 2=dp) 左右扫描法
+// 最长有效括号 - 左右扫描法
+// 还有其它两种解法见 Stack/ 与 DP/
 int longestValidParentheses(const string &s) {
     int left = 0, right = 0, ans = 0;
     for (const char c: s) {
