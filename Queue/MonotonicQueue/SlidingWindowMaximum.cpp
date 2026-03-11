@@ -43,7 +43,6 @@ vector<int> SlidingWindowMinimum(const vector<int> &nums, int k) {
 // 二维滑动窗口最大值
 // 先按行做宽度为 b 的窗口最值，得到中间矩阵
 // 再对中间矩阵做高度为 a 的窗口最值，得到结果矩阵
-
 vector<vector<int> > GetRowMax(const vector<vector<int> > &g, int b) {
     int n = static_cast<int>(g.size());
     int m = static_cast<int>(g.back().size());
@@ -74,4 +73,26 @@ vector<vector<int> > GetColMax(const vector<vector<int> > &g, int a) {
         }
     }
     return ColMax;
+}
+
+// 绝对差不超过限制的最长连续子数组
+// 思路 - 同时维护窗口最大值和窗口最小值，如果窗口非法，往右移动左指针
+int longestSubarrayWithAbsNoGreaterThanLimit(const vector<int> &nums, int limit) {
+    int n = static_cast<int>(nums.size());
+    deque<int> MinDeque, MaxDeque;
+    int ans = 0;
+    int left = 0;
+    for (int right = 0; right < n; ++right) {
+        while (!MinDeque.empty() && nums[MinDeque.back()] >= nums[right]) MinDeque.pop_back();
+        while (!MaxDeque.empty() && nums[MaxDeque.back()] <= nums[right]) MaxDeque.pop_back();
+        MinDeque.push_back(right);
+        MaxDeque.push_back(right);
+        if (int diff = abs(nums[MinDeque.front()] - nums[MaxDeque.front()]); diff > limit) {
+            while (!MinDeque.empty() && MinDeque.front() <= left) MinDeque.pop_front();
+            while (!MaxDeque.empty() && MaxDeque.front() <= left) MaxDeque.pop_front();
+            ++left;
+        }
+        else { ans = max(ans, right - left + 1); }
+    }
+    return ans;
 }
