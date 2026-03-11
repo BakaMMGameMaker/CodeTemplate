@@ -110,3 +110,35 @@ const ListNode *IntersectionNode(const ListNode *A, const ListNode *B) {
     }
     return pa; // nullptr or IntersectionNode
 }
+
+// 判断回文链表
+// 思路：找中点 反转后半段 两段进行比较
+bool isPalindrome(ListNode *head) {
+    if (!head || !head->next) return true;
+
+    ListNode *slow = head;
+    ListNode *fast = head;
+
+    // 这样写条件可以在偶数个节点时，让 slow 成为靠前的那个节点
+    while (fast->next && fast->next->next) {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    ListNode *prev = nullptr;
+    ListNode *cur = slow->next; // 准备对后半段进行反转
+    while (cur) {
+        ListNode *next = cur->next;
+        cur->next = prev;
+        prev = cur;
+        cur = next;
+    }
+    const ListNode *p1 = head;
+    const ListNode *p2 = prev;
+    while (p2) {
+        if (p1->val != p2->val) return false;
+        p1 = p1->next;
+        p2 = p2->next;
+    }
+    return true;
+}
