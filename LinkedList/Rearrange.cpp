@@ -40,7 +40,7 @@ void reorderList(ListNode *head) {
 
     // 反转后半段
     ListNode *second = slow->next; // 后半段的起点，注意反转不包括中点
-    slow->next = nullptr; // 把前后两段隔开
+    slow->next = nullptr;          // 把前后两段隔开
 
     // 现在相当于手上有一个链表头 second，我们要独立地对这段链表进行反转，参考 Reverse
     ListNode *prev = nullptr; // 当前处理节点的前驱节点
@@ -69,4 +69,23 @@ void reorderList(ListNode *head) {
         first = tmp1;
         second = tmp2;
     }
+}
+
+// 奇偶链表重排
+// 下标奇数位节点在前，偶在后，保持各自相对顺序
+ListNode *oddEvenList(ListNode *head) {
+    if (!head || !head->next) return head;
+    ListNode *odd = head;
+    ListNode *even = head->next;
+    ListNode *evenHead = even;
+
+    // 注意条件是 even
+    while (even and even->next) {
+        odd->next = even->next;
+        odd = odd->next;
+        even->next = odd->next;
+        even = even->next;
+    }
+    odd->next = evenHead;
+    return head;
 }
