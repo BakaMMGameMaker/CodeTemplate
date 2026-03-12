@@ -17,6 +17,7 @@ class Banana {
         return hours <= h;
     }
 
+public:
     int minEatSpd(const vector<int> &piles, int h) {
         int l = 1, r = *ranges::max_element(piles); // r 更大也没用，因为顶多一小时吃一堆
         while (l < r) {
