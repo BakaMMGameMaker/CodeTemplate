@@ -125,10 +125,13 @@ int ladderLength(const string &beginWord, const string &endWord, const vector<st
     if (!dict.contains(endWord)) return 0;
 
     // 双向 bfs
+    // q1 q2 表示从起点/终点扩展的一整层
+    // 而且需要高频判断某个状态是否位于对侧层中，所以不能用 queue
     unordered_set q1{beginWord}, q2{endWord}, visited{beginWord, endWord};
     int step = 1;
 
     while (!q1.empty() && !q2.empty()) {
+        // 优先扩展元素更少的一边可以减少分支数量
         if (q1.size() > q2.size()) swap(q1, q2);
 
         unordered_set<string> next;
