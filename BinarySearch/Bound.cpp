@@ -2,9 +2,8 @@
 using namespace std;
 
 // lowerBound and upperBound
-// 注意，这不是查找特定值
-// 别管为什么，这里用的是开区间 + 严格小于，比较的时候没有 mid == target 分支
 
+// r = n 而非 n - 1 的原因 - 结果位不一定在 0...n-1 范围内，比如所有元素都小于 target 的时候
 // lower bound - 找第一个 >= target 的位置
 // 更新 r 时究竟是 大于等于 还是 大于，取决于你想不想 r 进入 target 区间
 int lowerBound(const vector<int> &nums, int target) {
