@@ -117,3 +117,37 @@ int shortestPathLength(const vector<vector<int> > &graph) {
     }
     return -1;
 }
+
+// 双向 bfs
+// 题意 找到从 begin 到 end 的最短路径，begin 不一定在 wordList 中
+int ladderLength(const string &beginWord, const string &endWord, const vector<string> &wordList) {
+    unordered_set dict(wordList.begin(), wordList.end());
+    if (!dict.contains(endWord)) return 0;
+
+    // 双向 bfs
+    unordered_set q1{beginWord}, q2{endWord}, visited{beginWord, endWord};
+    int step = 1;
+
+    while (!q1.empty() && !q2.empty()) {
+        if (q1.size() > q2.size()) swap(q1, q2);
+
+        unordered_set<string> next;
+        for (string word : q1) {
+            for (int i = 0; i < word.size(); ++i) {
+                char old = word[i];
+                for (char c = 'a'; c <= 'z'; c++) {
+                    word[i] = c;
+                    if (q2.contains(word)) return step + 1; // 对面也有这个单词位于队列中了
+                    if (dict.contains(word) && !visited.contains(word)) {
+                        visited.emplace(word);
+                        next.emplace(word);
+                    }
+                }
+                word[i] = old;
+            }
+        }
+        q1 = std::move(next);
+        step++;
+    }
+    return 0;
+}
