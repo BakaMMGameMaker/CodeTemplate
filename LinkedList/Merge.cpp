@@ -6,14 +6,15 @@ using namespace std;
 
 // 合并两个有序链表
 ListNode *mergeTwoLists(ListNode *list1, ListNode *list2) {
-    ListNode dm; // 新链表 dm
+    ListNode dm;          // 新链表 dm
     ListNode *tail = &dm; // 新链表当前结尾
 
     while (list1 && list2) {
         if (list1->val <= list2->val) {
             tail->next = list1;
             list1 = list1->next;
-        } else {
+        }
+        else {
             tail->next = list2;
             list2 = list2->next;
         }
@@ -28,13 +29,14 @@ ListNode *mergeTwoLists(ListNode *list1, ListNode *list2) {
 // 递归版本
 ListNode *mergeTwoListsRecursive(ListNode *l1, ListNode *l2) {
     // 返回后面的部分处理完之后的头节点
-    if (!l1)return l2;
-    if (!l2)return l1;
+    if (!l1) return l2;
+    if (!l2) return l1;
 
     if (l1->val <= l2->val) {
         l1->next = mergeTwoListsRecursive(l1->next, l2);
         return l1;
-    } else {
+    }
+    else {
         l2->next = mergeTwoListsRecursive(l1, l2->next);
         return l2;
     }
@@ -52,7 +54,7 @@ struct cmp {
 
 ListNode *mergeKLists(const vector<ListNode *> &lists) {
     priority_queue<ListNode *, vector<ListNode *>, cmp> pq;
-    for (auto node: lists) {
+    for (auto node : lists) {
         if (node) pq.push(node); // 加入每个链表的头节点
     }
 
@@ -75,14 +77,14 @@ ListNode *mergeKLists(const vector<ListNode *> &lists) {
 ListNode *mergeSort(ListNode *head) {
     if (!head || !head->next) return head;
     ListNode *slow = head;
-    const ListNode *fast = head;
+    const ListNode *fast = head->next;
     while (fast && fast->next) {
         slow = slow->next;
         fast = fast->next->next;
     }
 
     ListNode *mid = slow->next;
-    slow->next = nullptr; // 断开连接，不然合并会出事故
+    slow->next = nullptr;             // 断开连接，不然合并会出事故
     ListNode *left = mergeSort(head); // 左半段排序完后的头节点
     ListNode *right = mergeSort(mid); // 右半段排序完后的头节点
 
