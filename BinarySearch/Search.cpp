@@ -3,7 +3,8 @@ using namespace std;
 
 // 二分查找基础
 // 二分查找最好用闭区间，不要给自己没事找事
-// 条件判断是小于等于，不是小于，因为 l==r 也构成一个区间，只不过只有一个数字
+// while 条件为 < 还是 <= 主要取决于 r 的更新方式
+// 如果有充足证据证明 mid 位置不可能为结果，那么 r = mid - 1，否则 r = mid
 int search(const vector<int> &nums, int target) {
     int l = 0, r = static_cast<int>(nums.size()) - 1;
     while (l <= r) {
@@ -25,8 +26,7 @@ int BinarySqrt(int x) {
         if (mid * mid <= x) {
             ans = mid; // 不着急 return 因为右边可能还有答案
             l = mid + 1;
-        }
-        else { r = mid - 1; }
+        } else { r = mid - 1; }
     }
     return ans;
 }
