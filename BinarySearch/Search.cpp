@@ -14,3 +14,19 @@ int search(const vector<int> &nums, int target) {
     }
     return -1;
 }
+
+// example - x 的平方根
+// 本质 - 在 [0...x] 这个数组内寻找最后一个 mid * mid <= x 的 target
+int BinarySqrt(int x) {
+    int l = 0, r = x;
+    int ans = 0;
+    while (l <= r) {
+        int mid = l + ((r - l) >> 1);
+        if (mid * mid <= x) {
+            ans = mid; // 不着急 return 因为右边可能还有答案
+            l = mid + 1;
+        }
+        else { r = mid - 1; }
+    }
+    return ans;
+}
