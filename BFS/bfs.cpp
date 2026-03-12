@@ -80,3 +80,40 @@ vector<vector<int> > updateMatrix(const vector<vector<int> > &mat) {
     }
     return dist;
 }
+
+// 状态压缩 bfs
+// [[1, [1 2 3 4]], [2, [3 5 6 7]], ... ]
+// leetcode 847
+// 变体 - leetcode 864
+int shortestPathLength(const vector<vector<int> > &graph) {
+    // mask: 当前这条路径访问过哪一些点
+    // 第 i 位表示节点 i 是否访问过
+    int n = static_cast<int>(graph.size());
+    int full = (1 << n) - 1;  // 所有节点都访问过的状态
+    queue<pair<int, int> > q; // {node, mask}
+    // dist 不再代表访问到 i j 网格时的最短步，而是代表访问到节点 u
+    // 且已访问的集合为 mask 的时候的最短步
+    vector dist(n, vector(1 << n, -1));
+
+    // 把任意一个点都作为 bfs 的起点
+    for (int i = 0; i < n; ++i) {
+        int mask = 1 << i;
+        q.emplace(i, mask);
+        dist[i][mask] = 0;
+    }
+
+    while (!q.empty()) {
+        auto [u, mask] = q.front();
+        q.pop();
+
+        if (mask == full) return dist[u][mask]; // 如果当前状态已经访问完了所有节点，直接返回最短步数
+
+        for (int v : graph[u]) {
+            int nextMask = mask | (1 << v); // 保留原本访问过的节点，标记新的节点已访问
+            if (dist[v][nextMask] != -1) continue;
+            dist[v][nextMask] = dist[u][mask] + 1;
+            q.emplace(v, nextMask);
+        }
+    }
+    return -1;
+}
