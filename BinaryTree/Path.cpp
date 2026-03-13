@@ -50,3 +50,36 @@ bool hasPathSumBFS(const TreeNode *root, int target) {
     }
     return false;
 }
+
+// 路径总和 II - 找出所有根到叶子且路径和为 target 的路径
+// 变化 1 - 时刻维护当前路径 path
+// 变化 2 - 找到合法路径的时候需要把 path 记录在答案中
+
+// 递归思路
+// 把当前节点加入路径, 更新剩余目标值
+// 递归左右子树, 返回上一层之前, 把当前节点从路径中移除
+vector<vector<int> > pathSum(const TreeNode *root, int target) {
+    if (not root) return {};
+    vector<vector<int> > ans;
+    vector<int> path;
+
+    function<void(const TreeNode *, int)> dfs = [&](const TreeNode *node, int remainSum) {
+        if (not node) return;
+        path.push_back(node->val);
+        if (not node->left and not node->right) {
+            // 遇到了叶子节点, 如果构成合法路径, 加入答案
+            // 无论有无合法路径, 都不再往下递归了
+            if (remainSum == node->val) ans.push_back(path);
+            path.pop_back();
+            return;
+        }
+
+        dfs(node->left, remainSum - node->val);
+        dfs(node->right, remainSum - node->val);
+
+        path.pop_back(); // 恢复现场
+    };
+
+    dfs(root, target);
+    return ans;
+}
