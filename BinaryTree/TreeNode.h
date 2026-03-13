@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 struct TreeNode {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
+    int val = 0;
+    TreeNode *left = nullptr;
+    TreeNode *right = nullptr;
 
-    explicit TreeNode(const int x) : val(x), left(nullptr), right(nullptr) {
+    explicit TreeNode(int x = 0) : val(x) {
     }
 };
