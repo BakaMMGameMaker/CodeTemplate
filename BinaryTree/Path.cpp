@@ -8,7 +8,7 @@ using namespace std;
 // - 路径上需要记载什么信息
 
 // 路经总和 - 是否存在根到叶子的路径是的和为 target
-bool hasPathSum(const TreeNode *root, int target) {
+bool hasPathSum(const TreeNode* root, int target) {
     if (not root) return false;
     // 遇到叶子节点
     if (not root->left and not root->right) return target == root->val;
@@ -19,7 +19,7 @@ bool hasPathSum(const TreeNode *root, int target) {
 // 栈存当前节点与从根走到当前节点的路径和
 // 如果弹出一个叶子节点且和为 target, 返回 true
 // 否则压栈左右孩子并更新路径和
-bool hasPathSumDFS(const TreeNode *root, int target) {
+bool hasPathSumDFS(const TreeNode* root, int target) {
     if (not root) return false;
 
     vector st{pair{root, root->val}};
@@ -36,7 +36,7 @@ bool hasPathSumDFS(const TreeNode *root, int target) {
 }
 
 // BFS - 思路没什么区别
-bool hasPathSumBFS(const TreeNode *root, int target) {
+bool hasPathSumBFS(const TreeNode* root, int target) {
     if (not root) return false;
 
     deque q{pair{root, root->val}};
@@ -58,12 +58,12 @@ bool hasPathSumBFS(const TreeNode *root, int target) {
 // 递归思路
 // 把当前节点加入路径, 更新剩余目标值
 // 递归左右子树, 返回上一层之前, 把当前节点从路径中移除
-vector<vector<int> > pathSum(const TreeNode *root, int target) {
+vector<vector<int> > pathSum(const TreeNode* root, int target) {
     if (not root) return {};
     vector<vector<int> > ans;
     vector<int> path;
 
-    function<void(const TreeNode *, int)> dfs = [&](const TreeNode *node, int remainSum) {
+    function<void(const TreeNode*, int)> dfs = [&](const TreeNode* node, int remainSum) {
         if (not node) return;
         path.push_back(node->val);
         if (not node->left and not node->right) {
@@ -87,10 +87,10 @@ vector<vector<int> > pathSum(const TreeNode *root, int target) {
 // 路径总和 III - 不要求从根开始, 不要求到叶子节点结束, 路径必须一直向下
 // 朴素 DFS
 // - 枚举每个点作为起点 - 从这个点往下 DFS 统计以它开头的合法路径数量
-int pathSumIII(const TreeNode *root, int target) {
+int pathSumIII(const TreeNode* root, int target) {
     if (not root) return 0;
 
-    function<int(const TreeNode *, int)> countFrom = [&](const TreeNode *node, int remain) {
+    function<int(const TreeNode*, int)> countFrom = [&](const TreeNode* node, int remain) {
         if (not node) return 0;
         int res = 0;
         if (node->val == remain) ++res; // 别着急停止, 谁知道后面会不会正负抵消
@@ -107,11 +107,11 @@ int pathSumIII(const TreeNode *root, int target) {
 // 前缀和 + 哈希表优化
 // 每个节点记录从根节点到当前的和
 // 如果 Root->A 有和 a, 而 A 的子节点 B 到底下的 C 路径和恰好为到 C 时的总和为 target + a, 说明 B 到 C 的总和为 target
-int pathSumIIIOptimized(const TreeNode *root, int target) {
+int pathSumIIIOptimized(const TreeNode* root, int target) {
     unordered_map prefixCount{pair{0, 1}}; // 前缀和 0 出现了 1 次, 以便统计一根节点为起点的路径
 
-    function<int(const TreeNode *, int)> dfs = [&](
-        const TreeNode *node, int curSumFromRoot) {
+    function<int(const TreeNode*, int)> dfs = [&](
+        const TreeNode* node, int curSumFromRoot) {
         if (not node) return 0;
 
         curSumFromRoot += node->val;
@@ -136,11 +136,11 @@ int pathSumIIIOptimized(const TreeNode *root, int target) {
 
 // 解法 1 - 递归
 // 思路 往下走就加连接符号, 遇到叶子节点就记录答案
-vector<string> binaryTreePaths(const TreeNode *root) {
+vector<string> binaryTreePaths(const TreeNode* root) {
     if (not root) return {};
     vector<string> ans;
 
-    function<void(const TreeNode *, string)> dfs = [&](const TreeNode *node, string path) {
+    function<void(const TreeNode*, string)> dfs = [&](const TreeNode* node, string path) {
         if (not node) return;
 
         if (not path.empty()) path += "->";
@@ -161,7 +161,7 @@ vector<string> binaryTreePaths(const TreeNode *root) {
 }
 
 // path 用数组记录, 遇到叶子再拼接, 减少反复拷贝字符串的开销
-vector<string> binaryTreePathsBackTrack(const TreeNode *root) {
+vector<string> binaryTreePathsBackTrack(const TreeNode* root) {
     if (not root) return {};
     vector<int> path;
     vector<string> ans;
@@ -176,7 +176,7 @@ vector<string> binaryTreePathsBackTrack(const TreeNode *root) {
         return s;
     };
 
-    function<void(const TreeNode *)> dfs = [&](const TreeNode *node) {
+    function<void(const TreeNode*)> dfs = [&](const TreeNode* node) {
         if (not node) return;
         path.push_back(node->val);
         if (not node->left and not node->right) {
@@ -189,5 +189,46 @@ vector<string> binaryTreePathsBackTrack(const TreeNode *root) {
     };
 
     dfs(root);
+    return ans;
+}
+
+// 非递归 DFS
+// 栈中存储当前节点以及到当前节点位置的路径, 如果遇到了叶子节点就加入答案
+vector<string> binaryTreePathsDFSIterative(const TreeNode* root) {
+    if (not root) return {};
+    vector<string> ans;
+    vector st{pair{root, to_string(root->val)}};
+    while (!st.empty()) {
+        auto [node, path] = st.back();
+        st.pop_back();
+
+        if (not node->left and not node->right) {
+            ans.push_back(path);
+            continue;
+        }
+
+        if (node->right) st.emplace_back(node->right, path + "->" + to_string(node->right->val));
+        if (node->left) st.emplace_back(node->left, path + "->" + to_string(node->left->val));
+    }
+    return ans;
+}
+
+// 非递归队列解法
+vector<string> binaryTreePathBFSIterative(const TreeNode* root) {
+    if (not root) return {};
+
+    vector<string> ans;
+    deque q{pair{root, to_string(root->val)}};
+
+    while (not q.empty()) {
+        auto [node, path] = q.front();
+        q.pop_front();
+        if (not node->left and not node->right) {
+            ans.push_back(path);
+            continue;
+        }
+        if (node->left) q.emplace_back(node->left, path + "->" + to_string(node->left->val));
+        if (node->right) q.emplace_back(node->right, path + "->" + to_string(node->right->val));
+    }
     return ans;
 }
