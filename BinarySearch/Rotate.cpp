@@ -42,3 +42,16 @@ int findMin(const vector<int> &nums) {
     }
     return nums[l];
 }
+
+// example 2 - 含有重复值的旋转数组的最小值
+// 核心 - 当 nums[mid] == nums[r] 的时候，不能断定 mid...r 有序，因为中间可能会凹下去
+int findMinII(const vector<int> &nums) {
+    int l = 0, r = static_cast<int>(nums.size() - 1);
+    while (l < r) {
+        int mid = l + ((r - l) >> 1);
+        if (nums[mid] == nums[r]) r--;
+        else if (nums[mid] > nums[r]) l = mid + 1;
+        else r = mid;
+    }
+    return l;
+}
