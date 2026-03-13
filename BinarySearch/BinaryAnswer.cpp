@@ -2,8 +2,23 @@
 using namespace std;
 
 // 答案二分 - 在所有可行结果中，越小越好或者越大越好
-// 越小越好 - mid 满足需求，则 r = mid, mid 不满足则 l = mid + 1
-// 越大越好 - mid 满足需求，则记录当前 ans 为 mid，l = mid + 1，否则 r = mid - 1
+// 越大越可行，但答案越小越好 - mid 满足需求，则 r = mid, mid 不满足则 l = mid + 1
+// 越小越可行，但答案越大越好 - mid 满足需求，则记录当前 ans 为 mid，l = mid + 1，否则 r = mid - 1
+
+// x 的平方根
+// 在 [0...x] 内寻找最大的满足 mid * mid <= x 的 target
+int BinarySqrt(int x) {
+    int l = 0, r = x;
+    int ans = 0;
+    while (l <= r) {
+        int mid = l + ((r - l) >> 1);
+        if (mid * mid <= x) { // 相当于 check = ( return mid * mid <= x )
+            ans = mid;        // 保留结果
+            l = mid + 1;
+        } else { r = mid - 1; }
+    }
+    return ans;
+}
 
 // 吃香蕉，可以自由调控每小时吃 k 根，速度越小越好
 // 每次只能挑一堆香蕉来吃
@@ -146,17 +161,27 @@ public :
     }
 };
 
-// example - x 的平方根
-// 在 [0...x] 内寻找最大的满足 mid * mid <= x 的 target
-int BinarySqrt(int x) {
-    int l = 0, r = x;
-    int ans = 0;
-    while (l <= r) {
-        int mid = l + ((r - l) >> 1);
-        if (mid * mid <= x) { // 相当于 check = true
-            ans = mid;        // 保留结果
-            l = mid + 1;
-        } else { r = mid - 1; }
+// example hard - leetcode 668
+// 乘法表中第 K 小的数字，其中乘法表的 table[i][j] = (i + 1) * (j + 1)
+// 上界 x 越大，数字越多，对 x 进行二分
+class KthNumber {
+    static int enough(int m, int n, int need, int mid) {
+        int cnt = 0;
+        for (int i = 1; i <= m; ++i) {
+            cnt += min(n, mid / i);
+            if (cnt >= need) return true;
+        }
+        return false;
     }
-    return ans;
-}
+
+public :
+    static int findKthNumber(int m, int n, int k) {
+        int l = 1, r = m * n;
+        while (l < r) {
+            int mid = l + ((r - l) >> 1);
+            if (enough(m, n, k, mid)) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+    }
+};
