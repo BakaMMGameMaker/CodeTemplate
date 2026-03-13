@@ -100,3 +100,32 @@ bool isBalanced(const TreeNode* root) {
     };
     return getH(root) != -1;
 }
+
+// 双栈模拟后序遍历
+bool isBalanceIterative(const TreeNode* root) {
+    if (not root) return true;
+
+    stack<const TreeNode*> st1, st2;
+    unordered_map<const TreeNode*, int> height; // 节点 -> 高度
+    st1.push(root);
+
+    while (!st1.empty()) {
+        auto node = st1.top();
+        st1.pop();
+        st2.push(node);
+        if (node->left)st1.push(node->left);
+        if (node->right) st1.push(node->right);
+    }
+
+    while (!st2.empty()) {
+        auto node = st2.top();
+        st2.pop();
+
+        int lh = node->left ? height[node->left] : 0;
+        int rh = node->right ? height[node->right] : 0;
+
+        if (abs(lh - rh) > 1)return false;
+        height[node] = max(lh, rh) + 1;
+    }
+    return true;
+}
