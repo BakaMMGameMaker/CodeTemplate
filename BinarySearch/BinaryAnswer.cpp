@@ -118,6 +118,34 @@ public:
     }
 };
 
+// example hard - leetcode 719 找出第 K 小数对距离
+// 本质 - dist 越大越容易凑 K 对数对出来，要找第 K 小，只要对数组排序，并二分 dist 让数对恰好不少于 K 即可
+class SmallestDistPair {
+    static int count(const vector<int> &nums, int dist) {
+        // 双指针法计算在当前 dist 下有多少合法数对
+        int cnt = 0;
+        int l = 0;
+        for (int r = 0; r < nums.size(); ++r) {
+            while (nums[r] - nums[l] > dist) ++l;
+            // nums[r] - nums[l] <= dist 则 l...r-1 的数字都可以和 r 构成合法数对
+            cnt += r - l;
+        }
+        return cnt;
+    }
+
+public :
+    static int smallestDistancePair(vector<int> &nums, int k) {
+        ranges::sort(nums);
+        int l = 0, r = nums.back() - nums.front();
+        while (l < r) {
+            int mid = l + ((r - l) >> 1);
+            if (count(nums, mid) < k) l = mid + 1;
+            else r = mid;
+        }
+        return l;
+    }
+};
+
 // example - x 的平方根
 // 在 [0...x] 内寻找最大的满足 mid * mid <= x 的 target
 int BinarySqrt(int x) {
