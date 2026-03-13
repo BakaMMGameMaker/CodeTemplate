@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <mutex>
 
 // 单例模式模板
 
@@ -34,3 +35,73 @@ private:
 
     ~Singleton() = default; // 析构也要私有，不然外面可以手动调用析构函数导致双重析构
 };
+
+// 饿汉式
+// 类加载时就创建对象
+// 优点 - 无线程安全问题, 缺点 - 程序启用就创建, 可能导致资源浪费
+class Singleton2 {
+public:
+    static Singleton2 &Get() { return instance; }
+
+    Singleton2(const Singleton2 &) = delete;
+
+    Singleton2 &operator=(const Singleton2 &) = delete;
+
+private:
+    Singleton2() = default;
+
+    ~Singleton2() = default;
+
+    static Singleton2 instance;
+};
+
+Singleton2 Singleton2::instance;
+
+// 懒汉式 - 第一次用时才创建
+// 线程不安全, 多个线程读取到 instance 为 nullptr 时会创建多个对象, 尽量不要用
+class Singleton3 {
+public:
+    static Singleton3 *Get() {
+        if (not instance) instance = new Singleton3();
+        return instance;
+    }
+
+    Singleton3(const Singleton3 &) = delete;
+
+    Singleton3 &operator=(const Singleton3 &) = delete;
+
+private:
+    Singleton3() = default;
+
+    ~Singleton3() = default;
+
+    static Singleton3 *instance;
+};
+
+Singleton3 *Singleton3::instance = nullptr;
+
+// 懒汉带锁
+// - 每次 Get 都要加锁，性能低下
+class Singleton3Lock {
+public:
+    static Singleton3Lock *Get() {
+        std::lock_guard lock(mtx);
+        if (not instance) instance = new Singleton3Lock();
+        return instance;
+    }
+
+    Singleton3Lock(const Singleton3Lock &) = delete;
+
+    Singleton3Lock &operator=(const Singleton3Lock &) = delete;
+
+private:
+    Singleton3Lock() = default;
+
+    ~Singleton3Lock() = default;
+
+    static Singleton3Lock *instance;
+    static std::mutex mtx;
+};
+
+Singleton3Lock *Singleton3Lock::instance = nullptr;
+std::mutex Singleton3Lock::mtx;
