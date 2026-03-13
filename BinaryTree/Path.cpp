@@ -131,3 +131,63 @@ int pathSumIIIOptimized(const TreeNode *root, int target) {
     };
     return dfs(root, 0);
 }
+
+// 所有路径 - 根节点到所有叶子节点的路径
+
+// 解法 1 - 递归
+// 思路 往下走就加连接符号, 遇到叶子节点就记录答案
+vector<string> binaryTreePaths(const TreeNode *root) {
+    if (not root) return {};
+    vector<string> ans;
+
+    function<void(const TreeNode *, string)> dfs = [&](const TreeNode *node, string path) {
+        if (not node) return;
+
+        if (not path.empty()) path += "->";
+        path += to_string(node->val);
+
+        if (not node->left and not node->right) {
+            // 当前节点为叶子
+            ans.push_back(path);
+            return;
+        }
+
+        dfs(node->left, path);
+        dfs(node->right, path);
+    };
+
+    dfs(root, "");
+    return ans;
+}
+
+// path 用数组记录, 遇到叶子再拼接, 减少反复拷贝字符串的开销
+vector<string> binaryTreePathsBackTrack(const TreeNode *root) {
+    if (not root) return {};
+    vector<int> path;
+    vector<string> ans;
+
+    auto buildPath = [&] {
+        if (path.empty()) return string();
+        string s = to_string(path[0]);
+        for (int i = 1; i < path.size(); ++i) {
+            s += "->";
+            s += to_string(path[i]);
+        }
+        return s;
+    };
+
+    function<void(const TreeNode *)> dfs = [&](const TreeNode *node) {
+        if (not node) return;
+        path.push_back(node->val);
+        if (not node->left and not node->right) {
+            ans.emplace_back(buildPath());
+        } else {
+            dfs(node->left);
+            dfs(node->right);
+        }
+        path.pop_back();
+    };
+
+    dfs(root);
+    return ans;
+}
