@@ -77,3 +77,26 @@ bool isSymmetricBFS(const TreeNode* root) {
     }
     return true;
 }
+
+// 判断是否平衡二叉树
+// 左右子树不平衡 => 返回 -1
+// 高度差大于 1 => 返回 -1
+// 否则返回当前子树高度
+// 核心思路是改造 getHeight 函数, 让它顺便判断合法性
+// 注意这是自底向上的写法, 因为会直接递归子节点先
+// 自顶向下则是 get height of left and right, if abs > 1 return -1, return f left and f right
+// 后者会导致大量重复计算
+bool isBalanced(const TreeNode* root) {
+    function<int(const TreeNode*)> getH = [&](const TreeNode* node) {
+        if (not node) return 0;
+        int lh = getH(node->left);
+        if (lh == -1) return -1;
+
+        int rh = getH(node->right);
+        if (rh == -1) return -1;
+        if (abs(lh - rh) > 1) return -1;
+
+        return max(lh, rh) + 1;
+    };
+    return getH(root) != -1;
+}
