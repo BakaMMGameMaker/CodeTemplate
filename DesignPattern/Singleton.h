@@ -115,7 +115,7 @@ std::mutex Singleton3Lock::mtx;
 // 在 CPU 重排序下依然危险的原因
 // 即便 instance 非空, 由于 CPU 指令重排的问题, 没有保证实例对象已经彻底构造完毕
 // 比如先分配内存, 然后直接赋值给 instance, 再调用构造函数
-// 这样就导致了线程可能会读取到半成品对象, 因此仍然不安全
+// 这样就导致了其它线程 Get 的时候可能会读取到半成品对象, 因此仍然不安全
 class SingletonDCL {
 public:
     static SingletonDCL *Get() {
