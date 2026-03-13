@@ -23,7 +23,9 @@ const TreeNode* LCA(const TreeNode* root, const TreeNode* p, const TreeNode* q) 
 }
 
 // 迭代 + 哈希 (建立父子关系)
-const TreeNode* LCAHash(const TreeNode* root, const TreeNode* p, const TreeNode* q) {
+// 思路 不断遍历并用哈希表建立父子关系, 直到 p q 都存在于表中
+// 由 p 往上构建祖先链条, q 再往上构建直到遇到第一个共同祖先
+const TreeNode* LCAIterative(const TreeNode* root, const TreeNode* p, const TreeNode* q) {
     unordered_map<const TreeNode*, const TreeNode*> parent;
     stack<const TreeNode*> st;
     parent[root] = nullptr;
@@ -53,4 +55,28 @@ const TreeNode* LCAHash(const TreeNode* root, const TreeNode* p, const TreeNode*
     // q 往上找, 直到找到任何一个在 path 中的, 就是 LCA
     while (!path.contains(q)) q = parent[q];
     return q;
+}
+
+// BST 的 LCA 更简单, 因为能利用大小关系进行剪枝
+// 递归写法
+const TreeNode* LCA_BST(const TreeNode* root, const TreeNode* p, const TreeNode* q) {
+    if (not root) return nullptr;
+
+    // p 和 q 都在 root 左边
+    if (p->val < root->val and q->val < root->val) return LCA_BST(root->left, p, q);
+    // p 和 q 都在 root 右边
+    if (p->val > root->val and q->val > root->val) return LCA_BST(root->right, p, q);
+    // p 和 q 在 root 两侧
+    return root;
+}
+
+// 非递归写法
+const TreeNode* LCAIterative_BST(const TreeNode* root, const TreeNode* p, const TreeNode* q) {
+    auto cur = root;
+    while (cur) {
+        if (p->val < cur->val and q->val < cur->val) cur = cur->left;
+        if (p->val > cur->val and q->val > cur->val) cur = cur->right;
+        return cur;
+    }
+    return nullptr;
 }
