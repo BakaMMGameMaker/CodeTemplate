@@ -91,6 +91,33 @@ public :
     }
 };
 
+// example leetcode 475 - 房屋供暖器 求供暖器集体半径的最小值，使得所有房屋都能有供暖
+class Heat {
+    static bool validRadius(const vector<int> &houses, const vector<int> &heaters, int radius) {
+        int j = 0, m = static_cast<int>(heaters.size());
+        for (int house : houses) {
+            while (j < m and heaters[j] + radius < house) ++j;       // 供暖器太左，往右走
+            if (j == m or heaters[j] - radius > house) return false; // 这个房屋没供暖器能用
+        }
+        return true;
+    }
+
+public:
+    static int findRadius(vector<int> &houses, vector<int> &heaters) {
+        // 关键优化 先排序，大幅降低 check 函数的复杂度
+        ranges::sort(houses);
+        ranges::sort(heaters);
+        int l = 0;
+        int r = max(abs(houses.back() - heaters.front()), abs(heaters.back() - houses.front()));
+        while (l < r) {
+            int mid = l + ((r - l) >> 1);
+            if (validRadius(houses, heaters, mid)) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+    }
+};
+
 // example - x 的平方根
 // 在 [0...x] 内寻找最大的满足 mid * mid <= x 的 target
 int BinarySqrt(int x) {
