@@ -59,6 +59,38 @@ public:
     }
 };
 
+// example hard - leetcode 410 分割数组的最大值
+// 把非负整数数组分割成 k 个连续子数组，要求 max(acc(each subarray)) 最小
+// 核心思路 - 其实和 D 天装载货物是一个模型，days 变成了 k，装载能力变成了数组和上限
+// 重点是要找到‘答案’所依赖的变量，在此处，acc(each subarray) <= limit 中的 limit 越大越好
+// 就像船只的容量越大越好一样
+class SplitArray {
+    static int validLimit(const vector<int> &nums, int k, int limit) {
+        int split = 1;
+        int curSum = 0;
+        for (int x : nums) {
+            if (curSum + x > limit) {
+                split++;
+                if (split > k) return false;
+                curSum = x;
+            } else { curSum += x; }
+        }
+        return true;
+    }
+
+public :
+    static int splitArray(const vector<int> &nums, int k) {
+        int max = *ranges::max_element(nums);
+        int l = max, r = accumulate(nums.begin(), nums.end(), 0);
+        while (l < r) {
+            int mid = l + ((r - l) >> 1);
+            if (validLimit(nums, k, mid)) r = mid;
+            else l = mid + 1;
+        }
+        return l;
+    }
+};
+
 // example - x 的平方根
 // 在 [0...x] 内寻找最大的满足 mid * mid <= x 的 target
 int BinarySqrt(int x) {
