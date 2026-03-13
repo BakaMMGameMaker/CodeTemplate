@@ -83,3 +83,51 @@ vector<vector<int> > pathSum(const TreeNode *root, int target) {
     dfs(root, target);
     return ans;
 }
+
+// 路径总和 III - 不要求从根开始, 不要求到叶子节点结束, 路径必须一直向下
+// 朴素 DFS
+// - 枚举每个点作为起点 - 从这个点往下 DFS 统计以它开头的合法路径数量
+int pathSumIII(const TreeNode *root, int target) {
+    if (not root) return 0;
+
+    function<int(const TreeNode *, int)> countFrom = [&](const TreeNode *node, int remain) {
+        if (not node) return 0;
+        int res = 0;
+        if (node->val == remain) ++res; // 别着急停止, 谁知道后面会不会正负抵消
+
+        res += countFrom(node->left, remain - node->val);
+        res += countFrom(node->right, remain - node->val);
+
+        return res;
+    };
+
+    return countFrom(root, target) + pathSumIII(root->left, target) + pathSumIII(root->right, target);
+}
+
+// 前缀和 + 哈希表优化
+// 每个节点记录从根节点到当前的和
+// 如果 Root->A 有和 a, 而 A 的子节点 B 到底下的 C 路径和恰好为到 C 时的总和为 target + a, 说明 B 到 C 的总和为 target
+int pathSumIIIOptimized(const TreeNode *root, int target) {
+    unordered_map prefixCount{pair{0, 1}}; // 前缀和 0 出现了 1 次, 以便统计一根节点为起点的路径
+
+    function<int(const TreeNode *, int)> dfs = [&](
+        const TreeNode *node, int curSumFromRoot) {
+        if (not node) return 0;
+
+        curSumFromRoot += node->val;
+
+        int res = 0;
+
+        res += prefixCount[curSumFromRoot - target];
+
+        ++prefixCount[curSumFromRoot];
+        res += dfs(node->left, curSumFromRoot);
+        res += dfs(node->right, curSumFromRoot);
+
+        // 回溯, 从子树返回父节点时减少 curSumFromRoot 记录
+        --prefixCount[curSumFromRoot];
+
+        return res;
+    };
+    return dfs(root, 0);
+}
