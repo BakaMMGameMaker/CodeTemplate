@@ -1,17 +1,9 @@
 ﻿#include <bits/stdc++.h>
+#include "TreeNode.h"
 using namespace std;
 
 // 二叉树三序遍历模板 递归与非递归
 // 前 中 后序遍历分别代表父节点在遍历过程的相对位置 (1 2 3)，左节点永远先于右节点遍历
-
-struct TreeNode {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-
-    explicit TreeNode(const int x) : val(x), left(nullptr), right(nullptr) {
-    }
-};
 
 // 前序遍历的递归写法
 void preorderRecursive(const TreeNode *root) {
@@ -127,9 +119,7 @@ void postorderIterativeOneStack(const TreeNode *root) {
         cur = stk.top();
         // 中序遍历在这里，会直接输出并 pop，并转到右子树
         // 后序遍历在这里，则是先访问右子树，后期再来 pop
-        if (cur->right != nullptr && prev != cur->right) {
-            cur = cur->right;
-        } else {
+        if (cur->right != nullptr && prev != cur->right) { cur = cur->right; } else {
             cout << cur->val << ' ';
             stk.pop();
             prev = cur;
@@ -150,8 +140,8 @@ void levelOrder(const TreeNode *root) {
         q.pop();
         cout << node->val << ' ';
 
-        if (node->left)q.push(node->left);
-        if (node->right)q.push(node->right);
+        if (node->left) q.push(node->left);
+        if (node->right) q.push(node->right);
     }
 }
 
