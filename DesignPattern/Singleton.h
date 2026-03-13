@@ -105,3 +105,37 @@ private:
 
 Singleton3Lock *Singleton3Lock::instance = nullptr;
 std::mutex Singleton3Lock::mtx;
+
+// 双检锁 DCL Double Check Locking
+// 在 CPU 重排序下依然危险的原因
+// 即便 instance 非空, 由于 CPU 指令重排的问题, 没有保证实例对象已经彻底构造完毕
+// 比如先分配内存, 然后直接赋值给 instance, 再调用构造函数
+// 这样就导致了线程可能会读取到半成品对象, 因此仍然不安全
+class SingletonDCL {
+public:
+    static SingletonDCL *Get() {
+        if (not instance) { // 避免每次都加锁
+            std::lock_guard lock(mtx);
+            // 这里可能进来两个线程, 所以要再判断一次
+            // A 过第一重检查 拿锁 创建实例
+            // B 过第一重检查 拿锁 发现 instance 非空 返回
+            if (not instance) instance = new SingletonDCL();
+        }
+        return instance;
+    }
+
+    SingletonDCL(const SingletonDCL &) = delete;
+
+    SingletonDCL &operator=(const SingletonDCL &) = delete;
+
+private:
+    SingletonDCL() = default;
+
+    ~SingletonDCL() = default;
+
+    static SingletonDCL *instance;
+    static std::mutex mtx;
+};
+
+SingletonDCL *SingletonDCL::instance = nullptr;
+std::mutex SingletonDCL::mtx;
