@@ -31,3 +31,29 @@ TreeNode* buildTreeWithPreAndInOrder(const vector<int>& preorder, const vector<i
     };
     return dfs(0, n - 1, 0, n - 1);
 }
+
+// 中后序构造二叉树
+TreeNode* buildTreeWithInAndPostOrder(const vector<int>& inorder, const vector<int>& postorder) {
+    int n = static_cast<int>(inorder.size());
+    unordered_map<int, int> pos;
+    for (int i = 0; i < n; ++i) pos[inorder[i]] = i;
+
+    function<TreeNode*(int, int, int, int)> dfs = [&](int il, int ir, int pl, int pr) -> TreeNode* {
+        if (il > ir or pl > pr) return nullptr;
+
+        int rootVal = postorder[pr]; // 左右中，根节点位于区间末尾
+        auto root = new TreeNode(rootVal);
+        int k = pos[rootVal];
+        int leftSize = k - il; // 左中右, 中在 k, 左开始于 il
+
+        root->left = dfs(il, k - 1, pl, pl + leftSize - 1);
+        root->right = dfs(k + 1, ir, pl + leftSize, pr - 1);
+        return root;
+    };
+
+    return dfs(0, n - 1, 0, n - 1);
+}
+
+// 前序 + 后序不行的原因: 有些树前序后序一样, 无法确定唯一树, 根本原因是根节点位于边界, 无法清楚分开左右子树
+// 特殊情况 - 满二叉树, 每个非叶子节点都有两个孩子
+// 值必须不重复的原因 - 如果产生了重复值, 那么无法确定哪个才是根节点, 这就导致树无法唯一确定
