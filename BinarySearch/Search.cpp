@@ -16,3 +16,18 @@ int search(const vector<int> &nums, int target) {
     return -1;
 }
 
+// 搜索二维矩阵
+// 每行首元素 > 上一行末尾元素
+// 本质还是一个一维有序数组
+bool searchMatrix(const vector<vector<int> > &matrix, int target) {
+    int m = static_cast<int>(matrix.size()), n = static_cast<int>(matrix.back().size());
+    int l = 0, r = m * n - 1;
+    while (l <= r) {
+        int mid = l + ((r - l) >> 1);
+        int x = matrix[mid / n][mid % n];
+        if (x == target) return true;
+        if (x < target) l = mid + 1;
+        else r = mid - 1;
+    }
+    return false;
+}
