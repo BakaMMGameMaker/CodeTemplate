@@ -27,6 +27,29 @@ int search(const vector<int> &nums, int target) {
     return -1;
 }
 
+// 含有重复值的旋转数组搜索
+// 当 nums[l] == nums[mid] 且 nums[mid] == nums[r] 的时候，没办法判断哪一边有序
+// 此时只能让 l 和 r 各自走一步
+bool searchII(const vector<int> &nums, int target) {
+    int l = 0, r = static_cast<int>(nums.size() - 1);
+
+    while (l <= r) {
+        int mid = l + ((r - l) >> 1);
+        if (nums[mid] == target) return true;
+        if (nums[l] == nums[mid] and nums[mid] == nums[r]) {
+            ++l;
+            --r;
+        } else if (nums[l] <= nums[mid]) { // 左半边有序
+            if (nums[l] <= target and target < nums[mid]) r = mid - 1;
+            else l = mid + 1;
+        } else {
+            if (nums[mid] < target and target <= nums[r]) l = mid + 1;
+            else r = mid - 1;
+        }
+    }
+    return false;
+}
+
 // example 1 - 旋转排序数组中的最小值
 // 思路 - 最小值的右手边一定为有序区间，包括最小值自己
 // 所以我们只需要看 mid...r 的区间
