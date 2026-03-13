@@ -129,3 +129,39 @@ bool isBalanceIterative(const TreeNode* root) {
     }
     return true;
 }
+
+// 是否二叉搜索树
+// 递归思路 左子树所有节点小于当前节点值 右子树所有节点大于当前节点值 递归期间维护好上下界
+bool isValidBSTRecursive(const TreeNode* root) {
+    function<bool(const TreeNode*, int64_t, int64_t)> dfs = [&](
+        const TreeNode* node, int64_t low, int64_t high) {
+        if (not node) return true;
+        if (node->val <= low or node->val >= high) return false;
+        return dfs(node->left, low, node->val) and dfs(node->right, node->val, high);
+    };
+    return dfs(root, INT64_MIN, INT64_MAX);
+}
+
+// 非递归 - 中序遍历 + 前驱值
+bool isValidBSTIterative(const TreeNode* root) {
+    stack<const TreeNode*> st;
+    auto cur = root;
+    int64_t prev = INT64_MIN;
+
+    while (cur or !st.empty()) {
+        // 中序遍历经典之先往左走到底部
+        // 空后弹栈, 访问, 往右边走
+        while (cur) {
+            st.push(cur);
+            cur = cur->left;
+        }
+
+        cur = st.top();
+        st.pop();
+        if (prev >= cur->val) return false;
+
+        prev = cur->val;
+        cur = cur->right;
+    }
+    return true;
+}
