@@ -41,6 +41,7 @@ int findMin(const vector<int> &nums) {
         else r = mid;                         // mid 而非 mid - 1 的原因是不能排除 mid 位置为最小值位置的可能性
     }
     return nums[l];
+    // 如果要找最大值，就返回 nums[(l - 1 + n) % n]
 }
 
 // example 2 - 含有重复值的旋转数组的最小值
