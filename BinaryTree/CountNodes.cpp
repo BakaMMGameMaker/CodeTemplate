@@ -43,3 +43,40 @@ int countNodesDFS(const TreeNode *root) {
     }
     return count;
 }
+
+// 完全二叉树的 CountNodes
+// 性质 - 除了最后一层, 前面每一层都满, 最后一层的节点尽量靠左排
+// 由此可知, 对于某一棵子树, 若其最左高度等于最右高度, 那么其为满二叉树
+// 满二叉树的节点数量为 2^h - 1
+
+// 解题思路
+// 对于当前根节点
+// - 一路往左得 leftHeight, 一路往右得 rightHeight
+// - 二者相等 => 满二叉树 => (1 << leftHeight) - 1
+// - 二者不等 => 1 + countNodes(root.left) + countNodes(root.right)
+int getLeftHeight(const TreeNode *node) {
+    int h = 0;
+    while (node) {
+        h++;
+        node = node->left;
+    }
+    return h;
+}
+
+int getRightHeight(const TreeNode *node) {
+    int h = 0;
+    while (node) {
+        h++;
+        node = node->right;
+    }
+    return h;
+}
+
+int countNodesII(const TreeNode *root) {
+    if (not root) return 0;
+    int lh = getLeftHeight(root);
+    int rh = getRightHeight(root);
+
+    if (lh == rh) return (1 << lh) - 1;
+    return 1 + countNodesII(root->left) + countNodesII(root->right);
+}
