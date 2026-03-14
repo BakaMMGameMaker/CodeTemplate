@@ -204,3 +204,49 @@ vector<vector<int> > zigzagLevelOrder(const TreeNode *root) {
 
     return result;
 }
+
+// 右视图 - 每一层取最后一个节点
+vector<int> rightSideView(const TreeNode *root) {
+    vector<int> ans;
+    if (not root) return ans;
+
+    queue<const TreeNode *> q;
+    q.push(root);
+    while (not q.empty()) {
+        for (size_t i = 0; i < q.size(); ++i) {
+            auto node = q.front();
+            q.pop();
+
+            if (i == q.size() - 1) ans.push_back(node->val);
+            if (node->left) q.push(node->left);
+            if (node->right) q.push(node->right);
+        }
+    }
+    return ans;
+}
+
+// 给定前序和中序, 输出右视图
+// 一般分两步走, 先建树再层序遍历, 此处不再赘述
+// 思路 - 恢复树的过程中已经知道了当前区间在哪棵子树, 第几层
+vector<int> getRightSideViewWithPreIn(const vector<int> &preOrder, const vector<int> &inOrder) {
+    size_t n = preOrder.size();
+    unordered_map<int, size_t> pos;
+    for (size_t i = 0; i < n; ++i) pos[inOrder[i]] = i;
+    vector<int> ans; // 存储右视图
+
+    function<void(size_t, size_t, size_t, size_t, size_t)> dfs =
+            [&](size_t preL, size_t preR, size_t inL, size_t inR, size_t depth) {
+        if (preL > preR or inL > inR) return;
+
+        int rootVal = preOrder[preL];
+        if (depth == ans.size()) ans.push_back(rootVal); // 因为先往右边走, 每层的末尾最快到达此处
+        size_t k = pos[rootVal];
+        size_t leftSize = k - inL;
+
+        // 先右后左, 保证每层第一次访问到的都是右视图节点
+        dfs(preL + leftSize + 1, preR, k + 1, inR, depth + 1);
+        dfs(preL + 1, preL + leftSize, inL, k - 1, depth + 1);
+    };
+    dfs(0, n - 1, 0, n - 1, 0);
+    return ans;
+}
