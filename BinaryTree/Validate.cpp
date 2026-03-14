@@ -177,7 +177,9 @@ bool isCompleteTree(const TreeNode *root) {
     while (!q.empty()) {
         auto node = q.front();
         q.pop();
-        if (not node) { seenNull = true; } else {
+        if (not node) {
+            seenNull = true;
+        } else {
             if (seenNull) return false;
             q.push(node->left); // 空也推
             q.push(node->right);
