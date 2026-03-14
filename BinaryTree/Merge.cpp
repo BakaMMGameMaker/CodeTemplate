@@ -43,6 +43,13 @@ TreeNode *mergeTreesIterative(TreeNode *root1, TreeNode *root2) {
             // node1.left 存在时, 相当于 node2.left 不存在, 此时什么也不做
             if (not node1->left) node1->left = node2->left; // 不进入队列
         }
+
+        if (node1->right and node2->right) {
+            q.push(node1->right);
+            q.push(node2->right);
+        } else {
+            if (not node1->right) node1->right = node2->right;
+        }
     }
     return root1;
 }
