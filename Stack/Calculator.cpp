@@ -2,6 +2,7 @@
 #include <stack>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 // 表达式求值 - 四则运算 + 括号优先级
 // 思路 两栈
@@ -70,4 +71,24 @@ int calculate(const std::string &s) {
 
     while (!ops.empty()) eval();
     return nums.top();
+}
+
+// 逆波兰表达式求值
+int evalRPN(const std::vector<std::string> &tokens) {
+    std::stack<int> st;
+    for (const std::string &s : tokens) {
+        if (s == "+" || s == "-" || s == "*" || s == "/") { // operation
+            int b = st.top();
+            st.pop();
+            int a = st.top();
+            st.pop();
+            if (s == "+") st.push(a + b);
+            else if (s == "-") st.push(a - b);
+            else if (s == "*") st.push(a * b);
+            else st.push(a / b);
+        } else {
+            st.push(std::stoi(s));
+        }
+    }
+    return st.top();
 }
