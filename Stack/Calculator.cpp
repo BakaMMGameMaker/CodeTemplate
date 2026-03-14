@@ -55,7 +55,7 @@ int calculate(const string &s) {
             // 比如 -2+3 会被当作 0-2
             // 这样就可以不用对这个数字进行额外的处理
             if ((s[i] == '+' or s[i] == '-') and
-                (i == 0 or s[i - 1] == '(' or priority.count(s[i - 1])))
+                (i == 0 or s[i - 1] == '(' or priority.contains(s[i - 1])))
                 nums.push(0);
 
             while (!ops.empty() and priority[ops.top()] >= priority[s[i]]) {
