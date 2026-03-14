@@ -113,7 +113,10 @@ vector<string> infixToPostfix(const string &s) {
     return output;
 }
 
-// 逆波兰表达式求值
+// 逆波兰表达式求值 (必须掌握)
+// 核心思路 - 遇到运算符就从栈里弹两个数字出来进行运算, 放回栈里
+// 遇到数字就直接放到栈里
+// 最终输出栈顶值即可
 int evalRPN(const vector<string> &tokens) {
     stack<int> st;
     for (const string &s : tokens) {
