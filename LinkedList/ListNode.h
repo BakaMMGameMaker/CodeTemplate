@@ -1,12 +1,16 @@
 ﻿#pragma once
 
 struct ListNode {
-    int val;
-    ListNode *next;
+    int val = 0;
+    ListNode *next = nullptr;
 
-    explicit ListNode(const int x = 0) : val(x), next(nullptr) {
-    }
+    explicit ListNode(int x = 0) : val(x) {}
+};
 
-    ListNode(const int x, ListNode *next) : val(x), next(next) {
-    }
+struct DoublyListNode {
+    int val = 0;
+    DoublyListNode *prev = nullptr;
+    DoublyListNode *next = nullptr;
+
+    explicit DoublyListNode(int x = 0) : val(x) {}
 };
