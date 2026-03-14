@@ -1,8 +1,7 @@
 ﻿#pragma once
-#include <stack>
-#include <string>
-#include <unordered_map>
-#include <vector>
+
+#include <bits/stdc++.h>
+using namespace std;
 
 // 表达式求值 - 四则运算 + 括号优先级
 // 思路 两栈
@@ -13,11 +12,11 @@
 // 遇到普通运算符, 根据优先级把栈内优先级更高或者相等的运算做掉, 再把当前运算符入栈
 // 最后做完剩余的运算
 
-int calculate(const std::string &s) {
-    std::stack<int> nums;
-    std::stack<char> ops;
+int calculate(const string &s) {
+    stack<int> nums;
+    stack<char> ops;
     size_t n = s.size();
-    std::unordered_map<char, int> priority{
+    unordered_map<char, int> priority{
         {'+', 1}, {'-', 1}, {'*', 2}, {'/', 2}
     };
 
@@ -74,9 +73,9 @@ int calculate(const std::string &s) {
 }
 
 // 逆波兰表达式求值
-int evalRPN(const std::vector<std::string> &tokens) {
-    std::stack<int> st;
-    for (const std::string &s : tokens) {
+int evalRPN(const vector<string> &tokens) {
+    stack<int> st;
+    for (const string &s : tokens) {
         if (s == "+" || s == "-" || s == "*" || s == "/") { // operation
             int b = st.top();
             st.pop();
@@ -87,7 +86,7 @@ int evalRPN(const std::vector<std::string> &tokens) {
             else if (s == "*") st.push(a * b);
             else st.push(a / b);
         } else {
-            st.push(std::stoi(s));
+            st.push(stoi(s));
         }
     }
     return st.top();
