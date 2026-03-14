@@ -113,7 +113,7 @@ vector<string> infixToPostfix(const string &s) {
     return output;
 }
 
-// 逆波兰表达式求值
+// 逆波兰表达式求值 (必须掌握)
 int evalRPN(const vector<string> &tokens) {
     stack<int> st;
     for (const string &s : tokens) {
