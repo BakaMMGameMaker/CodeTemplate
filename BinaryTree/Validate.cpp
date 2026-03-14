@@ -121,8 +121,8 @@ bool isBalanceIterative(const TreeNode *root) {
         auto node = st2.top();
         st2.pop();
 
-        int lh = node->left ? height[node->left] : 0;
-        int rh = node->right ? height[node->right] : 0;
+        int lh = height[node->left];
+        int rh = height[node->right];
 
         if (abs(lh - rh) > 1) return false;
         height[node] = max(lh, rh) + 1;
