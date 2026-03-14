@@ -15,8 +15,9 @@ int evalRPN(const vector<string> &tokens) {
             else if (s == "-") st.push(a - b);
             else if (s == "*") st.push(a * b);
             else st.push(a / b);
+        } else {
+            st.push(stoi(s));
         }
-        else { st.push(stoi(s)); }
     }
     return st.top();
 }
