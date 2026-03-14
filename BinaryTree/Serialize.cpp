@@ -74,7 +74,7 @@ string serializeIterative(const TreeNode *root) {
         auto node = q.front();
         q.pop();
 
-        // 这里也表明了空节点也要加入队列
+        // 空节点也要加入队列
         if (not node) {
             res += "#,";
             continue;
