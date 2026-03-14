@@ -228,6 +228,8 @@ vector<int> rightSideView(const TreeNode *root) {
 // 给定前序和中序, 输出右视图
 // 一般分两步走, 先建树再层序遍历, 此处不再赘述
 // 思路 - 恢复树的过程中已经知道了当前区间在哪棵子树, 第几层
+// 需要注意 - 只是右子树比左子树优先级高, 不代表能不递归左子树
+// 因为不是所有的最右节点都是通过根一路往右走就能到的
 vector<int> getRightSideViewWithPreIn(const vector<int> &preOrder, const vector<int> &inOrder) {
     size_t n = preOrder.size();
     unordered_map<int, size_t> pos;
