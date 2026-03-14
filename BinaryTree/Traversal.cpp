@@ -250,3 +250,25 @@ vector<int> getRightSideViewWithPreIn(const vector<int> &preOrder, const vector<
     dfs(0, n - 1, 0, n - 1, 0);
     return ans;
 }
+
+// 中序后序 => 右视图
+vector<int> getRightSideViewWithInPost(const vector<int> &inOrder, const vector<int> &postOrder) {
+    size_t n = inOrder.size();
+    unordered_map<int, size_t> pos;
+    for (size_t i = 0; i < n; ++i) pos[inOrder[i]] = i;
+    vector<int> ans;
+
+    auto dfs = [&](auto &&self, size_t inL, size_t inR, size_t postL, size_t postR, size_t depth) {
+        if (inL > inR or postL > postR) return;
+        int rootVal = postOrder[postR];
+        if (depth == ans.size()) ans.push_back(rootVal);
+        size_t k = pos[rootVal];
+        size_t leftSize = k - inL;
+
+        self(self, k + 1, inR, postL + leftSize, postR - 1, depth + 1);
+        self(self, inL, k - 1, postL, postL + leftSize - 1, depth + 1);
+    };
+
+    dfs(dfs, 0, n - 1, 0, n - 1, 0);
+    return ans;
+}
