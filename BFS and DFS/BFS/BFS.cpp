@@ -59,6 +59,57 @@ vector<int> bfsPath(int n, const vector<vector<int> > &graph, int start, int tar
     return path;
 }
 
+// 所有最短路径
+// 核心变化 - 存储多个 parent, 回溯路径时使用 dfs
+vector<vector<int> > allShortestPaths(int n, const vector<vector<int> > &graph, int start, int target) {
+    vector dist(n, -1);
+    vector<vector<int> > parents(n);
+    queue<int> q;
+
+    q.push(start);
+    dist[start] = 0;
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        // 不能直接 break 了, 可能有多条到中点的最短路
+
+        for (int v : graph[u]) {
+            if (dist[v] == -1) {
+                // 第一次到达 v, 一定是某条最短路径
+                dist[v] = dist[u] + 1;
+                parents[v].push_back(u);
+                q.push(v); // 注意, 仍然只进入一次队列
+            } else if (dist[v] == dist[u] + 1) {
+                // 另一条更短路, 注意 v 不再进入队列
+                parents[v].push_back(u);
+            }
+        }
+    }
+
+    if (dist[target] == -1) return {}; // 不可达
+
+    vector<vector<int> > ans;
+    vector<int> path;
+
+    auto dfs = [&](auto &&self, int cur) {
+        path.push_back(cur);
+
+        if (cur == start) {
+            ans.push_back(path);
+            path.pop_back();
+            return;
+        }
+
+        for (int pre : parents[cur]) self(self, pre);
+        path.pop_back();
+    };
+
+    dfs(dfs, target);
+    for (auto &p : ans) ranges::reverse(p);
+    return ans;
+}
+
 // 网格 bfs
 int gridBfs(const vector<vector<int> > &grid) {
     int m = static_cast<int>(grid.size()), n = static_cast<int>(grid.back().size());
@@ -116,6 +167,73 @@ vector<pair<int, int> > gridBfsPath(const vector<vector<int> > &grid) {
     for (pair cur = {m - 1, n - 1}; cur.first != -1; cur = parent[cur.first][cur.second]) path.push_back(cur);
     ranges::reverse(path);
     return path;
+}
+
+// 所有最短路径
+vector<vector<pair<int, int> > > allShortestPaths(const vector<vector<int> > &grid) {
+    int m = static_cast<int>(grid.size()), n = static_cast<int>(grid.back().size());
+
+    // 二维转一维
+    int N = m * n;
+    queue<int> q; // 不存下标, 存编号
+    vector dist(N, -1);
+    vector<vector<int> > parents(N);
+
+    auto IdOf = [&](int x, int y) { return x * n + y; };
+    auto inside = [&](int x, int y) { return x >= 0 and x < m and y >= 0 and y < n; };
+
+    int start = IdOf(0, 0);
+    int target = IdOf(m - 1, n - 1);
+
+    q.push(start);
+    dist[start] = 0;
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        int x = u / n, y = u % n;
+
+        for (auto [dx, dy] : dirs) {
+            int nx = x + dx, ny = y + dy;
+            if (not inside(nx, ny)) continue;
+            if (grid[nx][ny] == 1) continue; // 墙壁
+            int v = IdOf(nx, ny);
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                parents[v].push_back(u);
+                q.push(v);
+            } else if (dist[v] == dist[u] + 1) {
+                parents[v].push_back(u);
+            }
+        }
+    }
+
+    if (dist[target] == -1) return {};
+
+    vector<int> path;
+    vector<vector<int> > allIds;
+    vector<vector<pair<int, int> > > ans;
+
+    auto dfs = [&](auto &&self, int cur) {
+        path.push_back(cur);
+        if (cur == start) {
+            allIds.push_back(path);
+            path.pop_back();
+            return;
+        }
+        for (int pre : parents[cur]) self(self, pre);
+        path.pop_back();
+    };
+    dfs(dfs, target);
+
+    for (auto &ids : allIds) {
+        ranges::reverse(ids);
+        vector<pair<int, int> > cur;
+        for (int id : ids) cur.emplace_back(id / n, id % n);
+        ans.emplace_back(std::move(cur));
+    }
+    return ans;
 }
 
 // 多源 bfs
