@@ -59,6 +59,10 @@ int change(vector<int> &coins, int amount) {
     dp[0] = 0;
     for (int i = 1; i <= amount; ++i) {
         for (int coin : coins) {
+            // 需要初始化为 int32 max 而非 0 的原因体现在这里
+            // i < mincoin 的时候, 所有 dp 都是 0
+            // 然而它们是凑不出来, 而不是只需要 0 枚硬币就能凑出来
+            // 如果初始化为 0, min 的时候就会得到到错误结果
             if (i >= coin and dp[i - coin] != INT32_MAX) {
                 // 假设 coin = 5, 找 i - 5 的最少方案数量为 a
                 // 那么如果用这个硬币, 最少硬币数量就变成了 a + 1
