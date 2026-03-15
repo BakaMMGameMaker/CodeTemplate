@@ -1,6 +1,10 @@
 ﻿#include <bits/stdc++.h>
 using namespace std;
 
+static array<pair<int, int>, 4> dirs(
+    {{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
+);
+
 // 基础 bfs
 // [[1, [1 2 3 4]], [2, [3 5 6 7]], ... ]
 int bfs(int n, const vector<vector<int> > &graph, int start, int target) {
@@ -24,18 +28,50 @@ int bfs(int n, const vector<vector<int> > &graph, int start, int target) {
     return -1;
 }
 
+// 求取路径
+// 求最短路本质上就是在计算 dist 的同时维护好 parent, 最后从尾巴往前走找到路径就行
+vector<int> bfsPath(int n, const vector<vector<int> > &graph, int start, int target) {
+    queue<int> q;
+    vector dist(n, -1);
+    vector parent(n, -1); // 记录前驱
+
+    q.push(start);
+    dist[start] = 0;
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        if (u == target) break;
+
+        for (int v : graph[u]) {
+            if (dist[v] != -1) continue; // 访问过了
+            dist[v] = dist[u] + 1;
+            parent[v] = u; // 记录前驱
+            q.push(v);
+        }
+    }
+
+    if (dist[target] == -1) return {}; // 不可达
+
+    vector<int> path;
+    for (int cur = target; cur != -1; cur = parent[cur]) path.push_back(cur);
+    ranges::reverse(path);
+    return path;
+}
+
 // 网格 bfs
-int shortestPath(const vector<vector<int> > &grid) {
+int gridBfs(const vector<vector<int> > &grid) {
     int m = static_cast<int>(grid.size()), n = static_cast<int>(grid.back().size());
     queue<pair<int, int> > q;
     vector dist(m, vector(n, -1));
-    array<pair<int, int>, 4> dirs({{-1, 0}, {1, 0}, {0, -1}, {0, 1}});
 
     q.emplace(0, 0); // 起点为 0 0
     dist[0][0] = 0;
     while (!q.empty()) {
         auto [x, y] = q.front();
         q.pop();
+
+        if (x == m - 1 and y == n - 1) break;
 
         for (auto [dx, dy] : dirs) {
             int nx = x + dx, ny = y + dy;
@@ -49,12 +85,44 @@ int shortestPath(const vector<vector<int> > &grid) {
     return dist[m - 1][n - 1];
 }
 
+// 最短路径
+vector<pair<int, int> > gridBfsPath(const vector<vector<int> > &grid) {
+    int m = static_cast<int>(grid.size()), n = static_cast<int>(grid.back().size());
+    queue<pair<int, int> > q;
+    vector dist(m, vector(n, -1));
+    vector parent(m, vector(n, pair{-1, -1}));
+
+    q.emplace(0, 0);
+    dist[0][0] = 0;
+    while (!q.empty()) {
+        auto [x, y] = q.front();
+        q.pop();
+
+        if (x == m - 1 and y == n - 1) break;
+
+        for (auto [dx, dy] : dirs) {
+            int nx = x + dx, ny = y + dy;
+            if (nx < 0 || nx >= m || ny < 0 || ny >= n) continue;
+            if (grid[nx][ny] == 1) continue;  // 墙壁
+            if (dist[nx][ny] != -1) continue; // 访问过
+            dist[nx][ny] = dist[x][y] + 1;
+            parent[nx][ny] = {x, y};
+            q.emplace(nx, ny);
+        }
+    }
+    if (dist[m - 1][n - 1] == -1) return {};
+
+    vector<pair<int, int> > path;
+    for (pair cur = {m - 1, n - 1}; cur.first != -1; cur = parent[cur.first][cur.second]) path.push_back(cur);
+    ranges::reverse(path);
+    return path;
+}
+
 // 多源 bfs
 vector<vector<int> > updateMatrix(const vector<vector<int> > &mat) {
     int m = static_cast<int>(mat.size()), n = static_cast<int>(mat.back().size());
     queue<pair<int, int> > q;
     vector dist(m, vector(n, -1));
-    array<pair<int, int>, 4> dirs({{-1, 0}, {1, 0}, {0, -1}, {0, 1}});
 
     for (int i = 0; i < m; ++i) {
         for (int j = 0; j < n; ++j) {
