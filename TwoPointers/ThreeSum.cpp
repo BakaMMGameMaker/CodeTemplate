@@ -94,3 +94,45 @@ int threeSumClosest(vector<int> &nums, int target) {
     }
     return best;
 }
+
+// 通用 nSum, 本质就是外层枚举, 最后 2Sum 双指针
+vector<vector<int> > nSum(vector<int> &nums, int n, int start, int target) {
+    vector<vector<int> > ans;
+    int size = static_cast<int>(nums.size());
+
+    if (n < 2 or size - start < n) return ans; // 如只剩两个数, 凑不出 3Sum
+    if (n == 2) {
+        // 双指针
+        int left = start, right = size - 1;
+        while (left < right) {
+            int sum = nums[left] + nums[right];
+            if (sum < target) {
+                ++left;
+            } else if (sum > target) {
+                --right;
+            } else {
+                ans.push_back({nums[left], nums[right]});
+                ++left;
+                --right;
+
+                while (left < right and nums[left] == nums[left - 1]) ++left;
+                while (left < right and nums[right] == nums[right + 1]) --right;
+            }
+        }
+    } else {
+        for (int i = start; i <= size - n; ++i) {
+            if (i > start and nums[i] == nums[i - 1]) continue; // 去重
+            vector<vector<int> > sub = nSum(nums, n - 1, i + 1, target - nums[i]);
+            for (auto &vec : sub) {
+                vec.insert(vec.begin(), nums[i]);
+                ans.push_back(vec);
+            }
+        }
+    }
+    return ans;
+}
+
+vector<vector<int> > fourSum(vector<int> &nums, int target) {
+    ranges::sort(nums);
+    return nSum(nums, 4, 0, target);
+}
