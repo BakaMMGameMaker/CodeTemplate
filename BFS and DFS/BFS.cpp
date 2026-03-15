@@ -5,7 +5,7 @@ using namespace std;
 // [[1, [1 2 3 4]], [2, [3 5 6 7]], ... ]
 int bfs(int n, const vector<vector<int> > &graph, int start, int target) {
     queue<int> q;
-    vector<int> dist(n, -1);
+    vector dist(n, -1);
 
     q.push(start);
     dist[start] = 0;
@@ -16,8 +16,8 @@ int bfs(int n, const vector<vector<int> > &graph, int start, int target) {
         if (u == target) return dist[u];
 
         for (int v : graph[u]) {
-            if (dist[v] != -1) continue;
-            dist[v] = dist[u] + 1; // 入队立即标记
+            if (dist[v] != -1) continue; // 访问过了
+            dist[v] = dist[u] + 1;       // 入队立即标记
             q.push(v);
         }
     }
@@ -109,7 +109,7 @@ int shortestPathLength(const vector<vector<int> > &graph) {
         if (mask == full) return dist[u][mask]; // 如果当前状态已经访问完了所有节点，直接返回最短步数
 
         for (int v : graph[u]) {
-            int nextMask = mask | (1 << v); // 保留原本访问过的节点，标记新的节点已访问
+            int nextMask = mask | 1 << v; // 保留原本访问过的节点，标记新的节点已访问
             if (dist[v][nextMask] != -1) continue;
             dist[v][nextMask] = dist[u][mask] + 1;
             q.emplace(v, nextMask);
