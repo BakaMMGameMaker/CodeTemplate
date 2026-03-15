@@ -49,3 +49,22 @@ void fullbag() {
     if (dp.back() == -1) cout << 0 << endl;
     else cout << dp.back() << endl;
 }
+
+// example - 找零, 本质是完全背包, 每种硬币有无限个
+// 总体积就是需要找零的最终数值, 单个物品体积就是其面额
+// 这道题不能贪心的原因是, 我们要精确凑到 amount, 而不是 >= amount 的最少数量
+// 假设有 1 3 4 要凑 6, 如果贪心, 会找到 4 1 1, 而真正方案是 3 3
+int change(vector<int> &coins, int amount) {
+    vector dp(amount + 1, INT32_MAX); // 找 [k] 数额的最小硬币数量
+    dp[0] = 0;
+    for (int i = 1; i <= amount; ++i) {
+        for (int coin : coins) {
+            if (i >= coin and dp[i - coin] != INT32_MAX) {
+                // 假设 coin = 5, 找 i - 5 的最少方案数量为 a
+                // 那么如果用这个硬币, 最少硬币数量就变成了 a + 1
+                dp[i] = min(dp[i], dp[i - coin] + 1);
+            }
+        }
+    }
+    return dp[amount] == INT32_MAX ? -1 : dp[amount];
+}
