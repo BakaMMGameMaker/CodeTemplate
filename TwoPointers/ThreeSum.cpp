@@ -100,7 +100,16 @@ vector<vector<int> > nSum(vector<int> &nums, int n, int start, int target) {
     vector<vector<int> > ans;
     int size = static_cast<int>(nums.size());
 
-    if (n < 2 or size - start < n) return ans; // 如只剩两个数, 凑不出 3Sum
+    if (n < 2 or size - start < n) return ans; // 比如只剩两个数, 凑不出 3Sum
+
+    // 可选剪枝, 根据当前可以达到的 minmax Sum 和 target 的关系来决定是否继续往下计算
+    int minSum = 0, maxSum = 0;
+    for (int i = 0; i < n; ++i) {
+        minSum += nums[start + i];
+        maxSum += nums[size - 1 - i];
+    }
+    if (target < minSum or target > maxSum) return ans;
+
     if (n == 2) {
         // 双指针
         int left = start, right = size - 1;
