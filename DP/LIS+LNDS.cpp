@@ -47,8 +47,9 @@ int LNDS(const vector<int> &a) {
 // 最终 d 的长度就是结果，毕竟它记录了每种长度的序列的末尾元素最小值，注意 d 本身不是最长序列
 size_t BinaryLIS(const vector<int> &a) {
     vector<int> d;
-    for (int x: a) {
-        if (auto it = ranges::lower_bound(d, x); it == d.end()) d.push_back(x);
+    for (int x : a) {
+        auto it = ranges::lower_bound(d, x);
+        if (it == d.end()) d.push_back(x);
         else *it = x;
     }
     return d.size();
@@ -57,8 +58,9 @@ size_t BinaryLIS(const vector<int> &a) {
 // LNDS 中，只需要把 lb 换成 rb 即可，因为可以接在相等的元素后面
 size_t BinaryLNDS(const vector<int> &a) {
     vector<int> d;
-    for (int x: a) {
-        if (auto it = ranges::upper_bound(d, x); it == d.end()) d.push_back(x);
+    for (int x : a) {
+        auto it = ranges::upper_bound(d, x);
+        if (it == d.end()) d.push_back(x);
         else *it = x;
     }
     return d.size();
@@ -67,8 +69,8 @@ size_t BinaryLNDS(const vector<int> &a) {
 // 如果需要返回具体的序列
 vector<int> GetLIS(const vector<int> &a) {
     const size_t n = a.size();
-    vector<int> d; // d[k] = 长度为 k+1 的序列末尾元素的最小值
-    vector<int> pos; // pos[k] = 长度为 k+1 的序列对应的末尾最小值节点下标
+    vector<int> d;          // d[k] = 长度为 k+1 的序列末尾元素的最小值
+    vector<int> pos;        // pos[k] = 长度为 k+1 的序列对应的末尾最小值节点下标
     vector<int> pre(n, -1); // 前驱节点的下标
 
     for (int i = 0; i < n; ++i) {
