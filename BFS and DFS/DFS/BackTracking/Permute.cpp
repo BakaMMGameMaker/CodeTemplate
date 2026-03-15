@@ -1,4 +1,5 @@
 ﻿#include <algorithm>
+#include <string>
 #include<vector>
 using namespace std;
 
@@ -53,6 +54,34 @@ vector<vector<int> > permuteUnique(vector<int> &nums) {
 
             used[i] = true;
             path.push_back(nums[i]);
+            self(self);
+            path.pop_back();
+            used[i] = false;
+        }
+    };
+
+    dfs(dfs);
+    return ans;
+}
+
+// 字符串的排列
+// 本质就是有重复值的全排列 (具体有没有重复值取决于题目说字符串内有没有重复值, 大概率有)
+vector<string> permuteString(string &s) {
+    ranges::sort(s);
+    vector<string> ans;
+    string path;
+    vector<char> used(s.size());
+
+    auto dfs = [&](auto &&self) {
+        if (path.size() >= s.size()) {
+            ans.push_back(path);
+            return;
+        }
+        for (int i = 0; i < s.size(); ++i) {
+            if (used[i]) continue;
+            if (i > 0 and s[i] == s[i - 1] and not used[i - 1]) continue;
+            used[i] = true;
+            path.push_back(s[i]);
             self(self);
             path.pop_back();
             used[i] = false;
