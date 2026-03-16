@@ -72,3 +72,27 @@ int change(vector<int> &coins, int amount) {
     }
     return dp[amount] == INT32_MAX ? -1 : dp[amount];
 }
+
+// 划分数组, 使得两部分和最接近
+// 核心思路 - 本质是选取一些数字, 使得和最接近 sum / 2, 这样两部分和的差值一定最小
+// target = sum / 2, dp[j] = 是否能从数组中选出一些元素, 使得恰好其和为 k
+// 处理完毕后, 从 target 往下找第一个可达的 j, 答案就是 sum - 2j (abs(j - (sum - j)))
+int mindiff(vector<int> &nums) {
+    int sum = 0;
+    for (int x : nums) sum += x;
+
+    int target = sum / 2;
+    vector dp(target + 1, false);
+    dp[0] = true;        // 什么都不选择, 可以凑出和 0
+    for (int x : nums) { // 相当于遍历 items, 看看能不能对 dp[j] 进行更新
+        // 01 背包, 所以要倒序遍历背包空间
+        for (int j = target; j >= x; --j) {
+            dp[j] = dp[j] || dp[j - x];
+        }
+    }
+
+    for (int j = target; j >= 0; --j) {
+        if (dp[j]) return sum - 2 * j;
+    }
+    return sum;
+}
