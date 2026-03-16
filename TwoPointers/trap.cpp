@@ -1,5 +1,6 @@
 ﻿#include <vector>
 #include <stack>
+#include <queue>
 using namespace std;
 
 // 接雨水三种解法
@@ -27,7 +28,7 @@ int prepostsum(vector<int> &height) {
 // 双指针 (最优解法)
 // left 从左往右 right 从右往左
 // 同时维护左侧目前最高和右侧目前最高
-// 当前位置 (left/right) 能装多少水，只取决于两个最高高度中的较小值
+// 当前位置 (left/right) 能装多少水, 只取决于两个最高高度中的较小值
 int twopointer(vector<int> &height) {
     int n = height.size();
     int left = 0, right = n - 1;
@@ -68,6 +69,54 @@ int monotonicstack(vector<int> &height) {
             ans += wid * h;
         }
         st.push(i);
+    }
+    return ans;
+}
+
+// 二维网格接雨水
+// 思路 - 从边往内部扩散
+// 边界格子无法存水, 先把边界格子放进最小堆, 每次取出当前最低的围墙, 看其邻居
+// 如果邻居更低, 代表其能存水随后把邻居加入到堆里
+int trap2d(vector<vector<int> > &height) {
+    int m = height.size();
+    if (m == 0) return 0;
+    int n = height.back().size();
+    if (m < 3 or n < 3) return 0;
+    vector visited(m, vector(n, 0));
+
+    using T = tuple<int, int, int>;              // height, x, y
+    priority_queue<T, vector<T>, greater<> > pq; // 小根堆的原因: 由于连通性, 格子储水量取决于连通区域最矮柱
+
+    for (int i = 0; i < m; ++i) {
+        pq.emplace(height[i][0], i, 0);
+        pq.emplace(height[i][n - 1], i, n - 1);
+        visited[i][0] = 1;
+        visited[i][n - 1] = 1;
+    }
+
+    for (int j = 1; j < n - 1; ++j) {
+        pq.emplace(height[0][j], 0, j);
+        pq.emplace(height[m - 1][j], m - 1, j);
+        visited[0][j] = 1;
+        visited[m - 1][j] = true;
+    }
+
+    int ans = 0;
+    static int dirs[5] = {-1, 0, 1, 0, -1};
+
+    while (not pq.empty()) {
+        auto [h,x,y] = pq.top();
+        pq.pop();
+        for (int k = 0; k < 4; ++k) {
+            int nx = x + dirs[k], ny = y + dirs[k + 1];
+            if (nx < 0 or nx >= m or ny < 0 or ny >= n or visited[nx][ny]) continue;
+
+            visited[nx][ny] = true;
+            if (height[nx][ny] < h) ans += h - height[nx][ny];
+            // 注意存储的是更大值
+            // 因为连通性, 如 321, 对于 1 来说, 应该往 3 这堵墙看齐
+            pq.emplace(max(height[nx][ny], h), nx, ny);
+        }
     }
     return ans;
 }
