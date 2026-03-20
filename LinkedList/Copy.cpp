@@ -7,8 +7,7 @@ struct Node {
     Node *next;
     Node *random;
 
-    explicit Node(const int _val) : val(_val), next(nullptr), random(nullptr) {
-    }
+    explicit Node(const int _val) : val(_val), next(nullptr), random(nullptr) {}
 };
 
 // 哈希表写法
