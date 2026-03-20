@@ -119,7 +119,9 @@ void postorderIterativeOneStack(const TreeNode *root) {
         cur = stk.top();
         // 中序遍历在这里，会直接输出并 pop，并转到右子树
         // 后序遍历在这里，则是先访问右子树，后期再来 pop
-        if (cur->right != nullptr && prev != cur->right) { cur = cur->right; } else {
+        if (cur->right != nullptr && prev != cur->right) {
+            cur = cur->right;
+        } else {
             cout << cur->val << ' ';
             stk.pop();
             prev = cur;
@@ -172,6 +174,60 @@ vector<vector<int> > levelOrderByLevel(const TreeNode *root) {
     }
 
     return result;
+}
+
+// 垂直遍历
+// 根 row=col=0
+// 左 row+1, col-1 右 row+1, col+1
+vector<vector<int> > verticalTraversal(const TreeNode *root) {
+    vector<tuple<int, int, int> > nodes;
+
+    auto dfs = [&](auto &&self, const TreeNode *node, int row, int col) {
+        if (not node) return;
+        nodes.emplace_back(col, row, node->val);
+        self(self, node->left, row + 1, col - 1);
+        self(self, node->right, row + 1, col + 1);
+    };
+
+    dfs(dfs, root, 0, 0);
+    ranges::sort(nodes); // 按 col 升序, 一列内按 row 升序
+    vector<vector<int> > ans;
+    int prevcol = INT_MIN;
+    for (const auto &[col, row, val] : nodes) {
+        if (col != prevcol) {
+            ans.emplace_back();
+            prevcol = col;
+        }
+        ans.back().push_back(val);
+    }
+    return ans;
+}
+
+// 垂直遍历 BFS
+// 用红黑树保证天然有序
+vector<vector<int> > vertialTraversalBFS(const TreeNode *root) {
+    map<int, map<int, multiset<int> > > mp;
+    queue<tuple<const TreeNode *, int, int> > q;
+    q.emplace(root, 0, 0);
+
+    while (not q.empty()) {
+        auto [node, row, col] = q.front();
+        q.pop();
+
+        mp[col][row].insert(node->val);
+        if (node->left) q.emplace(node->left, row + 1, col - 1);
+        if (node->right) q.emplace(node->right, row + 1, col + 1);
+    }
+
+    vector<vector<int> > ans;
+    for (const auto &rows : mp | views::values) {
+        vector<int> cur;
+        for (const auto &vals : rows | views::values) {
+            for (int v : vals) cur.push_back(v);
+        }
+        ans.emplace_back(std::move(cur));
+    }
+    return ans;
 }
 
 // 之字形遍历的层序遍历
