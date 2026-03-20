@@ -105,10 +105,12 @@ int pathSumIII(const TreeNode *root, int target) {
 }
 
 // 前缀和 + 哈希表优化
-// 每个节点记录从根节点到当前的和
+// 每个节点维护:
+// 1 - 从根节点到当前节点，所有前缀和出现的次数
+// 2 - 从根节点到当前节点，前缀和是多少
 // 如果 Root->A 有和 a, 而 A 的子节点 B 到底下的 C 路径和恰好为到 C 时的总和为 target + a, 说明 B 到 C 的总和为 target
 int pathSumIIIOptimized(const TreeNode *root, int target) {
-    unordered_map prefixCount{pair{0, 1}}; // 前缀和 0 出现了 1 次, 以便统计一根节点为起点的路径
+    unordered_map prefixCount{pair{0, 1}}; // 前缀和 0 出现了 1 次, 以便统计以根为起点的路径
 
     function<int(const TreeNode *, int)> dfs = [&](
         const TreeNode *node, int curSumFromRoot) {
@@ -116,11 +118,12 @@ int pathSumIIIOptimized(const TreeNode *root, int target) {
 
         curSumFromRoot += node->val;
 
-        int res = 0;
-
-        res += prefixCount[curSumFromRoot - target];
-
+        // 初始化结果为前缀和 cursumfromroot - target 的出现次数
+        int res = prefixCount[curSumFromRoot - target];
+        // 当前前缀和出现次数 + 1
         ++prefixCount[curSumFromRoot];
+
+        // 往左右递归
         res += dfs(node->left, curSumFromRoot);
         res += dfs(node->right, curSumFromRoot);
 
