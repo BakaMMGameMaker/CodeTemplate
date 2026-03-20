@@ -15,7 +15,7 @@ ListNode *insertionSort(ListNode *head) {
         auto prev = &dm;
         // 步进条件 - 下一个节点没自己大 严格小于防止无意义多跑
         while (prev->next and prev->next->val < cur->val) { prev = prev->next; }
-        cur = prev->next;
+        cur->next = prev->next;
         prev->next = cur;
         cur = nxt;
     }
