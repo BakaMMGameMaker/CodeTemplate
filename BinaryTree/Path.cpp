@@ -183,7 +183,9 @@ vector<string> binaryTreePathsBackTrack(const TreeNode *root) {
     function<void(const TreeNode *)> dfs = [&](const TreeNode *node) {
         if (not node) return;
         path.push_back(node->val);
-        if (not node->left and not node->right) { ans.emplace_back(buildPath()); } else {
+        if (not node->left and not node->right) {
+            ans.emplace_back(buildPath());
+        } else {
             dfs(node->left);
             dfs(node->right);
         }
@@ -260,13 +262,13 @@ int maxSumPath(const TreeNode *root) {
     function<int(const TreeNode *)> dfs = [&](const TreeNode *node) {
         if (not node) return 0;
 
-        int left = max(0, dfs(node->left));
+        int left = max(0, dfs(node->left)); // 左子树能给自己提供的最大贡献 (不是其最大路径和)
         int right = max(0, dfs(node->right));
 
         int curPath = node->val + left + right; // 以自身为拐点(路径的一份子)，更新答案
         ans = max(ans, curPath);
 
-        // 往上返回自己所能贡献的最大长度
+        // 往上返回自己所能贡献的最大和
         return node->val + max(left, right);
     };
 
@@ -278,12 +280,12 @@ int maxSumPath(const TreeNode *root) {
 // 函数返回 - Rob 偷当前节点, NotRob - 不偷当前节点, 此时子节点可偷可不偷, 取最大值
 int rob(const TreeNode *root) {
     function<pair<int, int>(const TreeNode *)> dfs = [&](const TreeNode *node) -> pair<int, int> {
-        if (not root) return {0, 0}; // 节点为空, 不管打劫还是不打劫都只能得到 0 元
+        if (not node) return {0, 0}; // 节点为空, 不管打劫还是不打劫都只能得到 0 元
 
-        auto [RobL, NotRobL] = dfs(root->left);
-        auto [RobR, NotRobR] = dfs(root->right);
+        auto [RobL, NotRobL] = dfs(node->left);
+        auto [RobR, NotRobR] = dfs(node->right);
 
-        int RobCurrent = root->val + NotRobL + NotRobR;
+        int RobCurrent = node->val + NotRobL + NotRobR;
         int NotRobCurrent = max(RobL, NotRobL) + max(RobR, NotRobR);
 
         return {RobCurrent, NotRobCurrent};
