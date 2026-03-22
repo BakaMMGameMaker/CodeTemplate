@@ -89,6 +89,10 @@ public:
 // 使用 STL list
 class LRUCache_STL {
     int capacity = 0;
+
+    // 比起 LFU，LRU 的结构就很简单
+    // 不需要多条缓存链，所以只需要一个 list 保存所有的节点
+    // 同时再维护一个 key => 指向迭代器的 map 即可
     std::list<std::pair<int, int> > cache;
     std::unordered_map<int, std::list<std::pair<int, int> >::iterator> mp;
 
@@ -99,7 +103,7 @@ public:
         if (!mp.count(key)) return -1;
         auto it = mp[key];
         int value = it->second;
-        cache.splice(cache.begin(), cache, it);
+        cache.splice(cache.begin(), cache, it); // 把节点挪到头部
         mp[key] = cache.begin();
         return value;
     }
