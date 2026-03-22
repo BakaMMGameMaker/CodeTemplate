@@ -117,23 +117,31 @@ public:
 };
 
 class LFUCache_STL {
-    int capacity = 0;
-    int minFreq = 0;
+    int capacity = 0; // 缓存容量
+    int minFreq = 0;  // 当前最小频率 - 用于容量满的时候确定踢掉谁
+    // 三个哈希表
+    // 1 - 某个 key 的值和频率是多少
+    // 2 - 频率对应哪个缓存链表
+    // 3 - 某个 key 在他的缓存链中的迭代器是哪个
     std::unordered_map<int, std::pair<int, int> > keyToValFreq;  // key => {value, freq}
-    std::unordered_map<int, std::list<int> > freqToKeys;         // freq => 包含当前频次的节点的 list
+    std::unordered_map<int, std::list<int> > freqToCacheList;    // freq => 包含当前频次的节点的 list
     std::unordered_map<int, std::list<int>::iterator> keyToIter; // key => 目标节点在自己列表中的迭代器
 
+    // 增加一个 key 的频率，在 get 和 put 已有节点时都要调用
+    // 1 - 把 key 从旧链中删掉
+    // 2 - 如果旧链空了，删除旧链。如果旧链对应的刚好还是最小频率，别忘了增加最小频率
+    // 3 - 加入到新链的头部
     void increaseFreq(int key) {
         auto [value, freq] = keyToValFreq[key];
-        freqToKeys[freq].erase(keyToIter[key]);
-        if (freqToKeys[freq].empty()) {
-            freqToKeys.erase(freq);
+        freqToCacheList[freq].erase(keyToIter[key]);
+        if (freqToCacheList[freq].empty()) {
+            freqToCacheList.erase(freq);
             if (minFreq == freq) ++minFreq;
         }
         freq++;
         keyToValFreq[key] = {value, freq};
-        freqToKeys[freq].push_front(key);
-        keyToIter[key] = freqToKeys[freq].begin();
+        freqToCacheList[freq].push_front(key);
+        keyToIter[key] = freqToCacheList[freq].begin();
     }
 
 public:
@@ -149,22 +157,28 @@ public:
     void put(int key, int value) {
         if (capacity == 0) return;
 
+        // 设置已有值
         if (keyToValFreq.count(key)) {
             keyToValFreq[key].first = value;
             increaseFreq(key);
             return;
         }
+
+        // 缓存满了
+        // 最小频率对应缓存链删除末尾节点
+        // 如果对应缓存链空了，删除链条
+        // 没必要关心最小频率，因为到这里肯定是插入新值，最后最小频率肯定是 1
         if (keyToValFreq.size() == capacity) {
-            int keyToRemove = freqToKeys[minFreq].back();
-            freqToKeys[minFreq].pop_back();
-            if (freqToKeys[minFreq].empty()) freqToKeys.erase(minFreq);
+            int keyToRemove = freqToCacheList[minFreq].back();
+            freqToCacheList[minFreq].pop_back();
+            if (freqToCacheList[minFreq].empty()) freqToCacheList.erase(minFreq);
             keyToValFreq.erase(keyToRemove);
             keyToIter.erase(keyToRemove);
         }
 
         keyToValFreq[key] = {value, 1};
-        freqToKeys[1].push_front(key);
-        keyToIter[key] = freqToKeys[1].begin();
+        freqToCacheList[1].push_front(key);
+        keyToIter[key] = freqToCacheList[1].begin();
         minFreq = 1;
     }
 };
