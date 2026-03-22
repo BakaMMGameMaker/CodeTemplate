@@ -12,7 +12,7 @@ string longestpalindrome(const string &s) {
     int start = 0, maxlen = 1;
 
     auto expand = [&](int left, int right) {
-        while (left > 0 and right < n and s[left] == s[right]) {
+        while (left >= 0 and right < n and s[left] == s[right]) {
             if (right - left + 1 > maxlen) {
                 maxlen = right - left + 1;
                 start = left;
