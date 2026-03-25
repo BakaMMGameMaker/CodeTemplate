@@ -7,7 +7,8 @@ using namespace std;
 // 二分解法
 // 思路 d[k] 记录长度为 k+1 的最长上升子序列中末尾元素的最小值
 // 理由是越小的值，越容易接新的数字
-// 严格上升中，使用 lower bound，原因是此时只能接在严格比自己小的数字后面
+// 严格上升中，使用 lower bound，因为要找到所有能接住自己的子序列
+// 才能把自己接到左边，即所有能接住自己的子序列中最长的
 // 所以要更新的位置就是第一个 >= 自己的位置
 // 如果 lb 和 ub 找到 end，那么 push back
 // 最终 d 的长度就是结果，毕竟它记录了每种长度的序列的末尾元素最小值，注意 d 本身不是最长序列
@@ -65,4 +66,29 @@ vector<int> GetLIS(const vector<int> &a) {
     }
     ranges::reverse(res);
     return res;
+}
+
+// leetcode 1713 hard : 最少操作次数
+// 往 arr 中插值，变为 target 子序列的最少操作次数，arr 可有重复值，target 没有
+// 思路：最少操作次数 = target.size() - L
+// 其中 L 是在 arr 中能找到的与 target 相匹配的最长匹配子序列的长度
+// 求出 L 后，只需要插入 target.size() - L 个值就能匹配上个 target
+// 1 - 记录 target 中每一个值的位置
+// 2 - 开一个‘位置序列’并遍历 arr，如果值出现在 target 中，记录对应下标
+// 3 - 计算这个‘位置序列’的 LIS 的长度
+int minoperation(vector<int> &target, vector<int> &arr) {
+    unordered_map<int, int> pos; // target 中各个值出现的位置
+    for (int i = 0; i < target.size(); ++i) pos[target[i]] = i;
+    vector<int> d; // 位置序列中长度为 k + 1 的上升子序列的末尾的最小值
+    for (int x : arr) {
+        if (not pos.contains(x)) continue;
+        // 省略了 位置序列.pushback(index) 的步骤
+        // 相当于我们在同步遍历位置序列，直接获取 d 数组
+        int index = pos[x];
+        auto it = ranges::lower_bound(d, index);
+        if (it == d.end()) d.push_back(index);
+        else *it = index;
+    }
+
+    return target.size() - d.size();
 }
