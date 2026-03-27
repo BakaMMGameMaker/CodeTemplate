@@ -69,3 +69,18 @@ string removeDuplicateLetters(const string &s) {
     }
     return st;
 }
+
+// 商品折扣后的最终价格 - 每个商品的最终价格为原价格减去右边第一个不贵于他的价格
+vector<int> finalprices(vector<int> &prices) {
+    stack<int> stk;
+    vector res(prices);
+
+    for (int i = 0; i < prices.size(); ++i) {
+        while (not stk.empty() and prices[stk.top()] >= prices[i]) {
+            res[stk.top()] -= prices[i];
+            stk.pop();
+        }
+        stk.push(i);
+    }
+    return res;
+}
