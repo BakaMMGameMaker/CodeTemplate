@@ -66,3 +66,8 @@ public:
 private:
     T *ptr_;
 };
+
+template <class T, class... Args>
+UniquePtr<T> MakeUnique(Args &&... args) {
+    return UniquePtr<T>(new T(std::forward<Args>(args)...));
+}

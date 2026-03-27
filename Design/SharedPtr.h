@@ -104,3 +104,8 @@ private:
     T *ptr_;
     std::size_t *count_;
 };
+
+template <class T, class... Args>
+SharedPtr<T> MakeShared(Args &&... args) {
+    return SharedPtr<T>(new T(std::forward<Args>(args)...));
+}
